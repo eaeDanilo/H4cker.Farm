@@ -8,532 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#04080a;
-  --panel:#071210;
-  --panel2:#0a1a15;
-  --line:#123528;
-  --p:#37ff8b;
-  --p-dim:#1d8a4f;
-  --p-dark:#0e3b24;
-  --amber:#ffb83d;
-  --magenta:#ff3e6c;
-  --cyan:#2de2ff;
-  --txt:#bdf5d8;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%}
-body{
-  background:radial-gradient(ellipse at 50% -20%, #0a1f16 0%, var(--bg) 60%);
-  color:var(--txt);
-  font-family:'Share Tech Mono',monospace;
-  overflow-x:hidden;
-  user-select:none;
-}
-/* ---------- CRT overlay ---------- */
-#crt{
-  pointer-events:none;
-  position:fixed;inset:0;z-index:90;
-  background:
-    repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
-    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.45) 100%);
-  mix-blend-mode:multiply;
-}
-body.glitching{animation:bodyglitch .5s steps(2) 1}
-@keyframes bodyglitch{
-  0%{filter:hue-rotate(0) }
-  25%{filter:hue-rotate(90deg) invert(.08); transform:translateX(3px)}
-  50%{filter:hue-rotate(-60deg); transform:translateX(-3px)}
-  75%{filter:invert(.05); transform:translateY(2px)}
-  100%{filter:none; transform:none}
-}
-body.shake{animation:shake .25s linear 1}
-@keyframes shake{
-  0%,100%{transform:translate(0,0)}
-  20%{transform:translate(-4px,2px)}
-  40%{transform:translate(4px,-2px)}
-  60%{transform:translate(-3px,-2px)}
-  80%{transform:translate(2px,3px)}
-}
-/* ---------- header ---------- */
-header{
-  display:flex;align-items:center;gap:22px;flex-wrap:wrap;
-  padding:10px 18px;
-  border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg,#081511,#04080a);
-}
-h1.logo{
-  font-family:'VT323',monospace;
-  font-size:42px;line-height:1;
-  color:var(--p);
-  text-shadow:0 0 8px rgba(55,255,139,.7),0 0 24px rgba(55,255,139,.35);
-  position:relative;
-  letter-spacing:1px;
-}
-h1.logo::after{
-  content:attr(data-text);
-  position:absolute;left:2px;top:0;color:var(--magenta);
-  clip-path:inset(40% 0 35% 0);
-  opacity:.7;
-  animation:glitchclip 3.2s infinite steps(1);
-}
-@keyframes glitchclip{
-  0%,92%{clip-path:inset(100% 0 0 0)}
-  93%{clip-path:inset(15% 0 70% 0)}
-  95%{clip-path:inset(60% 0 20% 0)}
-  97%{clip-path:inset(35% 0 45% 0)}
-  98%{clip-path:inset(100% 0 0 0)}
-}
-#rank-box{min-width:200px}
-#rank-name{
-  font-family:'VT323',monospace;font-size:21px;color:var(--magenta);
-  text-shadow:0 0 8px rgba(255,62,108,.5);
-}
-#rank-bar{
-  height:7px;background:var(--p-dark);border:1px solid var(--line);
-  margin-top:3px;position:relative;overflow:hidden;
-}
-#rank-fill{
-  height:100%;width:0%;
-  background:linear-gradient(90deg,var(--p-dim),var(--p));
-  box-shadow:0 0 8px rgba(55,255,139,.8);
-  transition:width .3s;
-}
-#rank-next{font-size:11px;color:var(--p-dim);margin-top:2px}
-#counters{margin-left:auto;text-align:right}
-#bits{
-  font-family:'VT323',monospace;font-size:40px;line-height:1;
-  color:var(--amber);
-  text-shadow:0 0 10px rgba(255,184,61,.6);
-}
-#bits small{font-size:22px;color:#a87420}
-#bps{font-size:13px;color:var(--p-dim)}
-.hdr-btns{display:flex;gap:8px}
-.hdr-btns button{
-  background:transparent;border:1px solid var(--line);color:var(--p-dim);
-  font-family:'Share Tech Mono',monospace;font-size:11px;
-  padding:5px 9px;cursor:pointer;
-}
-.hdr-btns button:hover{color:var(--p);border-color:var(--p-dim)}
-/* ---------- layout ---------- */
-main{
-  display:grid;
-  grid-template-columns:1.1fr 1.2fr .95fr;
-  gap:14px;
-  padding:14px 18px 28px;
-  max-width:1500px;margin:0 auto;
-}
-section h2{
-  font-family:'VT323',monospace;font-size:20px;color:var(--p-dim);
-  letter-spacing:2px;margin-bottom:6px;font-weight:normal;
-}
-.panel{
-  background:var(--panel);
-  border:1px solid var(--line);
-  box-shadow:inset 0 0 40px rgba(0,0,0,.5);
-}
-/* ---------- terminal ---------- */
-#terminal{
-  position:relative;
-  height:330px;
-  cursor:pointer;
-  overflow:hidden;
-  background:
-    linear-gradient(180deg, rgba(55,255,139,.05), transparent 30%),
-    var(--panel);
-  border:1px solid var(--line);
-  box-shadow:inset 0 0 50px rgba(10,60,35,.5);
-  transition:box-shadow .1s;
-}
-#terminal:active{box-shadow:inset 0 0 70px rgba(55,255,139,.25)}
-#terminal::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg, rgba(55,255,139,.03) 0 2px, transparent 2px 4px);
-}
-#term-lines{
-  position:absolute;inset:10px 12px 50px;
-  overflow:hidden;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  font-size:13px;line-height:1.55;color:var(--p);
-  text-shadow:0 0 6px rgba(55,255,139,.45);
-  pointer-events:none;
-  word-break:break-all;
-}
-#term-prompt{
-  position:absolute;left:12px;right:12px;bottom:8px;font-size:14px;
-  color:var(--p);pointer-events:none;word-break:break-all;line-height:1.4;
-  text-shadow:0 0 6px rgba(55,255,139,.45);
-}
-#typed{color:#d6ffe9}
-#ghost{color:#1d6b45;text-shadow:none}
-#cursor{animation:blink 1s steps(1) infinite;color:var(--p)}
-#term-prompt.typo{animation:typoflash .3s steps(2)}
-@keyframes typoflash{
-  0%,60%{filter:drop-shadow(0 0 5px rgba(255,62,108,.9)) hue-rotate(-120deg);transform:translateX(2px)}
-}
-/* ---------- evento de invasão (digitação) ---------- */
-#evento{
-  display:none;
-  margin-bottom:10px;padding:10px 16px 14px;
-  background:var(--panel);
-  border:1px solid var(--amber);
-  box-shadow:0 0 25px rgba(255,184,61,.3),inset 0 0 40px rgba(0,0,0,.5);
-}
-#evento.on{display:block;animation:toastin .25s ease-out}
-#evento-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
-#evento-name{
-  font-family:'VT323',monospace;font-size:28px;color:var(--amber);
-  text-shadow:0 0 12px rgba(255,184,61,.7);letter-spacing:1px;
-}
-#evento-mult{
-  font-family:'VT323',monospace;font-size:28px;color:var(--cyan);
-  text-shadow:0 0 10px rgba(45,226,255,.6);
-}
-#evento-secs{
-  margin-left:auto;font-family:'VT323',monospace;font-size:62px;line-height:.9;
-  color:var(--amber);text-shadow:0 0 16px rgba(255,184,61,.8);
-}
-#evento-bar{
-  height:18px;margin-top:8px;
-  border:1px solid rgba(255,184,61,.5);
-  background:rgba(0,0,0,.55);overflow:hidden;
-}
-#evento-fill{
-  height:100%;width:100%;
-  background:linear-gradient(90deg,#a86f1d,var(--amber));
-  box-shadow:0 0 12px rgba(255,184,61,.8);
-}
-#evento-gain{font-size:12px;color:#5fae84;margin-top:5px}
-#evento-gain b{color:var(--amber)}
-#evento-total{font-size:11px;color:#3f7a5c;margin-top:2px}
-#evento.low{border-color:var(--magenta);box-shadow:0 0 25px rgba(255,62,108,.35),inset 0 0 40px rgba(0,0,0,.5)}
-#evento.low #evento-name,#evento.low #evento-secs{color:var(--magenta);text-shadow:0 0 14px rgba(255,62,108,.8)}
-#evento.low #evento-bar{border-color:rgba(255,62,108,.6)}
-#evento.low #evento-fill{
-  background:linear-gradient(90deg,#7a1430,var(--magenta));
-  box-shadow:0 0 10px rgba(255,62,108,.8);
-  animation:lowblink .35s steps(1) infinite;
-}
-@keyframes lowblink{50%{opacity:.35}}
-#kbd-input{
-  position:absolute;opacity:0;width:1px;height:1px;left:-5px;top:-5px;
-  border:0;padding:0;background:transparent;color:transparent;
-}
-@keyframes blink{50%{opacity:0}}
-#float-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.float-num{
-  position:absolute;
-  font-family:'VT323',monospace;font-size:26px;color:var(--amber);
-  text-shadow:0 0 8px rgba(255,184,61,.8);
-  animation:floatup 1s ease-out forwards;
-  white-space:nowrap;
-  transform:translate(-50%,-50%);
-}
-.float-num.crit{
-  font-size:40px;color:var(--magenta);
-  text-shadow:0 0 14px rgba(255,62,108,.9);
-  animation:floatcrit 1.2s ease-out forwards;
-}
-@keyframes floatup{
-  to{transform:translate(-50%,-110px);opacity:0}
-}
-@keyframes floatcrit{
-  0%{transform:translate(-50%,-50%) scale(.4)}
-  20%{transform:translate(-50%,-60%) scale(1.3)}
-  to{transform:translate(-50%,-140px) scale(1);opacity:0}
-}
-.float-num.mini{
-  font-size:15px;color:var(--p);
-  text-shadow:0 0 6px rgba(55,255,139,.6);
-  animation-duration:.7s;
-}
-#click-hint{
-  text-align:center;font-size:12px;color:var(--p-dim);
-  padding:6px 0 2px;letter-spacing:1px;
-}
-/* ---------- formatar PC (buff de click) ---------- */
-#format-btn{
-  display:block;width:100%;margin-top:8px;padding:8px;
-  font-family:inherit;font-size:13px;letter-spacing:1px;cursor:pointer;
-  background:#07120c;color:#2de2ff;border:1px solid rgba(45,226,255,.4);
-  transition:background .15s,box-shadow .15s;
-}
-#format-btn:hover:not(:disabled){background:#0a1f16;box-shadow:0 0 12px rgba(45,226,255,.3)}
-#format-btn:disabled{opacity:.45;cursor:not-allowed;color:var(--p-dim);border-color:rgba(55,255,139,.2)}
-#format-btn.active-buff{
-  color:var(--amber);border-color:var(--amber);
-  box-shadow:0 0 14px rgba(255,184,61,.4);
-  animation:packetjitter .3s infinite steps(2);
-}
-/* golden packet */
-.packet{
-  position:absolute;width:46px;height:46px;cursor:pointer;z-index:5;
-  background:linear-gradient(135deg,#3a2a05,#0a0a05);
-  border:1px solid var(--amber);
-  box-shadow:0 0 14px rgba(255,184,61,.8),inset 0 0 8px rgba(255,184,61,.5);
-  display:flex;align-items:center;justify-content:center;
-  font-family:'VT323',monospace;font-size:20px;color:var(--amber);
-  animation:packetjitter .4s infinite steps(2), packetin .3s ease-out;
-}
-@keyframes packetjitter{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(1px,-1px)}
-  100%{transform:translate(-1px,1px)}
-}
-@keyframes packetin{from{transform:scale(0)}to{transform:scale(1)}}
-/* ---------- adware (popups de propaganda) ---------- */
-.popup-ad{
-  position:fixed;z-index:80;width:240px;
-  background:#0c1410;border:1px solid var(--magenta);
-  box-shadow:0 0 18px rgba(255,62,108,.45),0 8px 30px rgba(0,0,0,.6);
-  font-family:'VT323',monospace;
-  animation:adin .22s ease-out;
-}
-.popup-ad .ad-bar{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;
-  background:linear-gradient(90deg,#3a0a18,#1a0510);
-  border-bottom:1px solid rgba(255,62,108,.5);
-  padding:3px 6px;font-size:13px;color:var(--magenta);letter-spacing:1px;
-}
-.popup-ad .ad-x{
-  cursor:pointer;border:1px solid var(--magenta);color:var(--magenta);
-  width:20px;height:20px;line-height:18px;text-align:center;font-size:13px;
-  background:#000;flex:0 0 auto;
-}
-.popup-ad .ad-x:hover{background:var(--magenta);color:#000}
-.popup-ad .ad-body{
-  padding:12px 10px;text-align:center;font-size:17px;color:#ffd9e4;
-  cursor:pointer;line-height:1.3;
-}
-.popup-ad .ad-small{display:block;font-size:10px;color:#8a4a5d;margin-top:7px}
-@keyframes adin{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
-.float-num.screen{position:fixed;z-index:81}
-/* ---------- log ---------- */
-#log{margin-top:14px;padding:8px 12px;height:170px;display:flex;flex-direction:column}
-#log-list{
-  list-style:none;overflow:hidden;flex:1;
-  display:flex;flex-direction:column;justify-content:flex-end;
-  font-size:11.5px;line-height:1.6;color:#5fae84;
-}
-#log-list li::before{content:"> ";color:var(--p-dim)}
-#log-list li.warn{color:var(--amber)}
-#log-list li.evt{color:var(--magenta)}
-/* ---------- room ---------- */
-#room-wrap{padding:10px}
-svg#room{width:100%;display:block;background:#050d09;border:1px solid var(--line)}
-.r-item{opacity:0;transition:opacity 1.2s}
-.r-item.on{opacity:1}
-.led{animation:ledblink 1.4s steps(1) infinite}
-.led.d2{animation-delay:.5s}
-.led.d3{animation-delay:.9s}
-@keyframes ledblink{0%,60%{opacity:1}61%,100%{opacity:.15}}
-.fan{
-  transform-box:fill-box;transform-origin:center;
-  animation:spin 1.2s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.codebar{animation:codepulse 1.8s ease-in-out infinite}
-.codebar.c2{animation-delay:.4s}
-.codebar.c3{animation-delay:.8s}
-@keyframes codepulse{0%,100%{opacity:.25}50%{opacity:1}}
-.ping{
-  transform-box:fill-box;transform-origin:center;
-  animation:ping 2.4s ease-out infinite;
-}
-.ping.p2{animation-delay:.8s}
-.ping.p3{animation-delay:1.6s}
-@keyframes ping{0%{transform:scale(.3);opacity:1}80%,100%{transform:scale(2.4);opacity:0}}
-.qpulse{
-  transform-box:fill-box;transform-origin:center;
-  animation:qpulse 2.2s ease-in-out infinite;
-}
-@keyframes qpulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.18);opacity:1}}
-.cateyes{animation:catblink 4.5s steps(1) infinite}
-@keyframes catblink{0%,92%{opacity:1}93%,100%{opacity:0}}
-#stats-mini{
-  display:flex;gap:16px;flex-wrap:wrap;
-  font-size:11px;color:var(--p-dim);
-  padding:8px 12px;border-top:1px solid var(--line);
-}
-#stats-mini b{color:var(--txt)}
-/* ---------- shop ---------- */
-#shop-col .panel{padding:10px}
-#tabs{display:flex;gap:4px;margin-bottom:8px}
-#tabs button{
-  flex:1;background:transparent;border:1px solid var(--line);
-  color:var(--p-dim);font-family:'VT323',monospace;font-size:17px;
-  padding:5px 0;cursor:pointer;letter-spacing:1px;
-}
-#tabs button.active{
-  color:var(--p);border-color:var(--p-dim);
-  background:var(--p-dark);
-  text-shadow:0 0 6px rgba(55,255,139,.5);
-}
-#qty-row{display:flex;gap:4px;margin-bottom:8px;align-items:center}
-#qty-row span{font-size:11px;color:var(--p-dim);margin-right:4px}
-#qty-row button{
-  background:transparent;border:1px solid var(--line);color:var(--p-dim);
-  font-family:'Share Tech Mono',monospace;font-size:11px;
-  padding:3px 10px;cursor:pointer;
-}
-#qty-row button.active{color:var(--amber);border-color:var(--amber)}
-#shop-list{display:flex;flex-direction:column;gap:6px;max-height:560px;overflow-y:auto;padding-right:4px}
-#shop-list::-webkit-scrollbar{width:6px}
-#shop-list::-webkit-scrollbar-thumb{background:var(--p-dark)}
-.shop-item{
-  display:flex;align-items:center;gap:10px;text-align:left;
-  background:var(--panel2);border:1px solid var(--line);
-  padding:8px 10px;cursor:pointer;width:100%;
-  font-family:'Share Tech Mono',monospace;color:var(--txt);
-  opacity:.45;transition:opacity .15s, border-color .15s, transform .05s;
-}
-.shop-item.ok{opacity:1}
-.shop-item.ok:hover{border-color:var(--p-dim);background:#0d251c}
-.shop-item.ok:active{transform:scale(.98)}
-.shop-item .tag{
-  font-family:'VT323',monospace;font-size:16px;
-  border:1px solid var(--p-dim);color:var(--p);
-  min-width:44px;text-align:center;padding:6px 2px;
-  text-shadow:0 0 6px rgba(55,255,139,.5);
-  flex-shrink:0;
-}
-.shop-item.upg .tag{border-color:var(--cyan);color:var(--cyan);text-shadow:0 0 6px rgba(45,226,255,.5)}
-.s-info{flex:1;min-width:0}
-.s-info b{font-size:13px;color:var(--txt);display:block}
-.s-info small{font-size:10.5px;color:#5fae84;display:block;line-height:1.3}
-.s-prod{font-size:10.5px;color:var(--cyan)}
-.s-right{text-align:right;flex-shrink:0}
-.s-cost{font-family:'VT323',monospace;font-size:20px;color:var(--amber);display:block;line-height:1}
-.shop-item:not(.ok) .s-cost{color:#7a5a20}
-.s-owned{font-size:11px;color:var(--p-dim)}
-#owned-upg{margin-top:10px;display:flex;flex-wrap:wrap;gap:4px}
-#owned-upg span{
-  font-size:10px;border:1px solid var(--p-dark);color:var(--p-dim);
-  padding:2px 6px;
-}
-/* achievements tab */
-.ach-cell{
-  background:var(--panel2);border:1px solid var(--line);
-  padding:7px 10px;
-}
-.ach-cell b{font-size:12px;color:var(--amber);display:block}
-.ach-cell small{font-size:10.5px;color:#5fae84}
-.ach-cell.locked b{color:#3a5a48}
-.ach-cell.locked{opacity:.5}
-/* ---------- toasts ---------- */
-#toasts{
-  position:fixed;top:14px;right:14px;z-index:100;
-  display:flex;flex-direction:column;gap:8px;max-width:320px;
-}
-.toast{
-  background:#081511;border:1px solid var(--p);
-  border-left:4px solid var(--p);
-  padding:10px 14px;font-size:12.5px;color:var(--txt);
-  box-shadow:0 0 18px rgba(55,255,139,.25);
-  animation:toastin .25s ease-out;
-}
-.toast b{display:block;font-family:'VT323',monospace;font-size:18px;color:var(--p)}
-.toast.gold{border-color:var(--amber);border-left-color:var(--amber);box-shadow:0 0 18px rgba(255,184,61,.3)}
-.toast.gold b{color:var(--amber)}
-.toast.rank{border-color:var(--magenta);border-left-color:var(--magenta);box-shadow:0 0 18px rgba(255,62,108,.3)}
-.toast.rank b{color:var(--magenta)}
-@keyframes toastin{from{transform:translateX(40px);opacity:0}}
-.toast.out{transition:opacity .4s, transform .4s;opacity:0;transform:translateX(40px)}
-/* ---------- missão ---------- */
-#mission{margin-top:14px;padding:8px 12px}
-#ms-name{font-family:'VT323',monospace;font-size:19px;color:var(--cyan);text-shadow:0 0 8px rgba(45,226,255,.5)}
-#ms-desc{font-size:11.5px;color:#5fae84;margin:2px 0 6px;line-height:1.4}
-#ms-bar{height:7px;background:var(--p-dark);border:1px solid var(--line);overflow:hidden}
-#ms-fill{height:100%;width:0%;background:linear-gradient(90deg,#0e6b8a,var(--cyan));box-shadow:0 0 8px rgba(45,226,255,.7);transition:width .3s}
-#ms-prog{font-size:11px;color:var(--p-dim);margin-top:3px;text-align:right}
-/* ---------- duelo jogo da velha ---------- */
-#ttt-modal{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(2,6,5,.82)}
-#ttt-modal.open{display:flex}
-#ttt-box{
-  background:var(--panel);border:1px solid var(--magenta);
-  box-shadow:0 0 30px rgba(255,62,108,.35),inset 0 0 40px rgba(0,0,0,.6);
-  padding:18px 22px;text-align:center;max-width:360px;
-  animation:toastin .25s ease-out;
-}
-#ttt-box h3{
-  font-family:'VT323',monospace;font-size:26px;color:var(--magenta);
-  text-shadow:0 0 10px rgba(255,62,108,.6);letter-spacing:1px;font-weight:normal;
-}
-#ttt-msg{font-size:12px;color:var(--txt);margin:8px 0 12px;line-height:1.5;min-height:36px}
-#ttt-board{display:none;grid-template-columns:repeat(3,72px);gap:6px;justify-content:center;margin:0 auto 12px}
-#ttt-board.on{display:grid}
-.ttt-cell{
-  width:72px;height:72px;background:var(--panel2);border:1px solid var(--line);
-  font-family:'VT323',monospace;font-size:46px;line-height:1;color:var(--p);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  text-shadow:0 0 10px rgba(55,255,139,.6);
-}
-.ttt-cell:hover{border-color:var(--p-dim);background:#0d251c}
-.ttt-cell.o{color:var(--magenta);text-shadow:0 0 10px rgba(255,62,108,.6);cursor:default}
-.ttt-cell.x{cursor:default}
-.ttt-cell.hl{border-color:var(--amber);box-shadow:inset 0 0 14px rgba(255,184,61,.45)}
-#ttt-btns{display:flex;gap:8px;justify-content:center}
-#ttt-btns button{
-  background:transparent;border:1px solid var(--line);color:var(--p);
-  font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 14px;cursor:pointer;
-}
-#ttt-btns button:hover{border-color:var(--p-dim);background:var(--p-dark)}
-/* ---------- modal evento de digitação ---------- */
-#evt-modal{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;background:rgba(2,6,5,.82)}
-#evt-modal.open{display:flex}
-#evt-box{
-  background:var(--panel);border:1px solid var(--amber);
-  box-shadow:0 0 30px rgba(255,184,61,.35),inset 0 0 40px rgba(0,0,0,.6);
-  padding:18px 22px;text-align:center;max-width:360px;
-  animation:toastin .25s ease-out;
-}
-#evt-box h3{
-  font-family:'VT323',monospace;font-size:26px;color:var(--amber);
-  text-shadow:0 0 10px rgba(255,184,61,.6);letter-spacing:1px;font-weight:normal;
-}
-#evt-msg{font-size:12px;color:var(--txt);margin:8px 0 12px;line-height:1.5}
-#evt-btns{display:flex;gap:8px;justify-content:center}
-#evt-btns button{
-  background:transparent;border:1px solid var(--line);color:var(--p);
-  font-family:'Share Tech Mono',monospace;font-size:12px;padding:7px 14px;cursor:pointer;
-}
-#evt-btns button:hover{border-color:var(--p-dim);background:var(--p-dark)}
-/* ---------- mudança de local (temas) ---------- */
-.shop-item.move{border-color:rgba(255,184,61,.55)}
-.shop-item.move .tag{border-color:var(--amber);color:var(--amber);text-shadow:0 0 6px rgba(255,184,61,.5)}
-.shop-item.move.ok{box-shadow:0 0 14px rgba(255,184,61,.25)}
-.shop-item.move.ok:hover{border-color:var(--amber)}
-body.loc-1{
-  --p:#2de2ff;--p-dim:#1789a8;--p-dark:#0a2c3b;--txt:#c8f1ff;
-  --panel:#06121a;--panel2:#0a1a24;--line:#11344a;--bg:#03070d;
-  background:radial-gradient(ellipse at 50% -20%, #0a1626 0%, var(--bg) 60%);
-}
-body.loc-2{
-  --p:#8fb3ff;--p-dim:#4a6fb0;--p-dark:#101f3c;--txt:#dbe6ff;
-  --panel:#070d1c;--panel2:#0b1326;--line:#1b2c55;--bg:#02050d;
-  background:radial-gradient(ellipse at 50% -20%, #0b1230 0%, var(--bg) 60%);
-}
-body.loc-3{
-  --p:#ffd76a;--p-dim:#a8852f;--p-dark:#3b2c0a;--txt:#ffeec2;
-  --panel:#171107;--panel2:#221a0b;--line:#4a3a12;--bg:#080502;
-  background:radial-gradient(ellipse at 50% -20%, #241a06 0%, var(--bg) 60%);
-}
-/* ---------- responsive ---------- */
-@media (max-width:1100px){
-  main{grid-template-columns:1fr 1fr}
-  #room-col{order:3;grid-column:1/-1}
-}
-@media (max-width:760px){
-  main{grid-template-columns:1fr}
-  #room-col{order:0}
-  h1.logo{font-size:32px}
-  #bits{font-size:30px}
-  #counters{margin-left:0}
-  #evento-name,#evento-mult{font-size:20px}
-  #evento-secs{font-size:44px}
-}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div id="crt"></div>
@@ -545,18 +20,20 @@ body.loc-3{
     <div id="rank-bar"><div id="rank-fill"></div></div>
     <div id="rank-next"></div>
   </div>
+  <div id="prestige-info"></div>
   <div id="counters">
     <div id="bits">0 <small>bits</small></div>
     <div id="bps">0 bits/s</div>
   </div>
   <div class="hdr-btns">
     <button id="btn-mute">[som: on]</button>
+    <button id="btn-prestige" style="display:none">[kernel panic]</button>
     <button id="btn-reset">[reset]</button>
   </div>
 </header>
 
 <main>
-  <!-- ============ TERMINAL ============ -->
+  <!-- TERMINAL -->
   <section id="terminal-col">
     <h2>// terminal</h2>
     <div id="evento">
@@ -590,7 +67,7 @@ body.loc-3{
     </div>
   </section>
 
-  <!-- ============ SALA ============ -->
+  <!-- SALA -->
   <section id="room-col">
     <h2 id="room-title">// seu quarto</h2>
     <div id="room-wrap" class="panel">
@@ -601,7 +78,6 @@ body.loc-3{
             <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
         </defs>
-        <!-- parede e chão -->
         <rect id="r-wall" x="0" y="0" width="420" height="240" fill="#071009"/>
         <g id="r-grid" stroke="#0c1f15" stroke-width="1">
           <line x1="0" y1="60" x2="420" y2="60"/><line x1="0" y1="120" x2="420" y2="120"/>
@@ -612,7 +88,6 @@ body.loc-3{
         <rect id="r-floor" x="0" y="240" width="420" height="60" fill="#0a1410"/>
         <line x1="0" y1="240" x2="420" y2="240" stroke="#16402c" stroke-width="1.5"/>
 
-        <!-- pôster 1 (3 upgrades) -->
         <g id="r-poster1" class="r-item">
           <rect x="60" y="28" width="40" height="52" fill="#0b1812" stroke="#1d8a4f"/>
           <circle cx="80" cy="46" r="9" fill="none" stroke="#37ff8b" stroke-width="1.5"/>
@@ -621,7 +96,6 @@ body.loc-3{
           <path d="M75 51 q5 4 10 0" stroke="#37ff8b" fill="none"/>
           <text x="80" y="70" font-size="7" fill="#37ff8b" text-anchor="middle" font-family="monospace">r00t</text>
         </g>
-        <!-- pôster 2 (8 upgrades) -->
         <g id="r-poster2" class="r-item">
           <rect x="12" y="36" width="38" height="46" fill="#0b1812" stroke="#ff3e6c"/>
           <text x="31" y="52" font-size="8" fill="#ff3e6c" text-anchor="middle" font-family="monospace">HACK</text>
@@ -629,7 +103,6 @@ body.loc-3{
           <text x="31" y="72" font-size="8" fill="#ff3e6c" text-anchor="middle" font-family="monospace">PLANET</text>
         </g>
 
-        <!-- mapa mundi (botnet) -->
         <g id="r-map" class="r-item">
           <rect x="132" y="36" width="90" height="52" fill="#081410" stroke="#1d8a4f"/>
           <path d="M140 56 q8 -8 18 -4 q6 -6 14 -2 q4 6 -2 10 q-10 6 -18 2 q-8 2 -12 -6Z" fill="#11331f"/>
@@ -642,7 +115,6 @@ body.loc-3{
           <circle cx="205" cy="50" r="3" fill="none" stroke="#ff3e6c" class="ping p3"/>
         </g>
 
-        <!-- telão datacenter -->
         <g id="r-bigscreen" class="r-item">
           <rect x="248" y="32" width="116" height="60" fill="#06100b" stroke="#2de2ff"/>
           <text x="306" y="44" font-size="7" fill="#2de2ff" text-anchor="middle" font-family="monospace">DATACENTER-01 :: ONLINE</text>
@@ -654,7 +126,6 @@ body.loc-3{
           <rect x="336" y="48" width="10" height="36" fill="#2de2ff" class="codebar c3" opacity=".6"/>
         </g>
 
-        <!-- prateleira com rig de GPU -->
         <g id="r-rig" class="r-item">
           <rect x="62" y="96" width="104" height="5" fill="#16402c"/>
           <g>
@@ -670,7 +141,6 @@ body.loc-3{
           </g>
         </g>
 
-        <!-- rack de servidores -->
         <g id="r-rack" class="r-item">
           <rect x="16" y="118" width="38" height="122" fill="#0b1812" stroke="#1d8a4f"/>
           <line x1="16" y1="138" x2="54" y2="138" stroke="#123528"/>
@@ -690,7 +160,6 @@ body.loc-3{
           <circle cx="32" cy="208" r="2" fill="#37ff8b" class="led" filter="url(#glow)"/>
         </g>
 
-        <!-- gato em cima do rack (10 conquistas) -->
         <g id="r-cat" class="r-item">
           <ellipse cx="35" cy="112" rx="13" ry="7" fill="#101c14"/>
           <circle cx="46" cy="106" r="6" fill="#101c14"/>
@@ -703,14 +172,12 @@ body.loc-3{
           <path d="M23 112 q-7 -2 -5 -10" stroke="#101c14" stroke-width="3" fill="none"/>
         </g>
 
-        <!-- mesa -->
         <g id="r-desk" class="r-item">
           <rect x="120" y="176" width="180" height="8" fill="#16402c"/>
           <rect x="128" y="184" width="6" height="56" fill="#123528"/>
           <rect x="286" y="184" width="6" height="56" fill="#123528"/>
         </g>
 
-        <!-- cadeira -->
         <g id="r-chair" class="r-item">
           <rect x="86" y="148" width="9" height="52" rx="3" fill="#101c14" stroke="#16402c"/>
           <rect x="90" y="196" width="42" height="9" rx="3" fill="#101c14" stroke="#16402c"/>
@@ -720,7 +187,6 @@ body.loc-3{
           <circle cx="124" cy="238" r="3" fill="#123528"/>
         </g>
 
-        <!-- monitor 1 -->
         <g id="r-monitor" class="r-item">
           <rect x="148" y="126" width="68" height="44" fill="#0b1812" stroke="#1d8a4f" stroke-width="1.5"/>
           <rect x="152" y="130" width="60" height="36" fill="#04080a" id="r-screen1"/>
@@ -733,7 +199,7 @@ body.loc-3{
             <rect x="156" y="156" width="40" height="3" fill="#37ff8b" class="codebar c2" filter="url(#glow)"/>
           </g>
         </g>
-        <!-- monitor 2 (upgrade monitor curvo) -->
+
         <g id="r-monitor2" class="r-item">
           <rect x="224" y="134" width="48" height="36" fill="#0b1812" stroke="#1d8a4f" stroke-width="1.5"/>
           <rect x="228" y="138" width="40" height="28" fill="#04080a"/>
@@ -743,26 +209,22 @@ body.loc-3{
           <rect x="244" y="170" width="8" height="5" fill="#123528"/>
         </g>
 
-        <!-- teclado + mouse -->
         <g id="r-kbd" class="r-item">
           <rect x="166" y="184" width="56" height="7" rx="2" fill="#0d251c" stroke="#1d8a4f"/>
           <circle cx="240" cy="188" r="4" fill="#0d251c" stroke="#1d8a4f"/>
         </g>
 
-        <!-- latas de energético (500 cliques) -->
         <g id="r-cans" class="r-item">
           <rect x="254" y="164" width="7" height="12" rx="2" fill="#0d251c" stroke="#ffb83d"/>
           <rect x="264" y="166" width="7" height="10" rx="2" fill="#0d251c" stroke="#ff3e6c"/>
         </g>
 
-        <!-- orbe quântico na mesa -->
         <g id="r-quantum" class="r-item">
           <rect x="280" y="166" width="16" height="10" fill="#123528"/>
           <circle cx="288" cy="158" r="10" fill="#0a1a2a" stroke="#2de2ff" class="qpulse" filter="url(#glow)"/>
           <circle cx="288" cy="158" r="4" fill="#2de2ff" class="qpulse" filter="url(#glow)"/>
         </g>
 
-        <!-- torre/gabinete (CPU) -->
         <g id="r-tower" class="r-item">
           <rect x="308" y="184" width="28" height="56" fill="#0b1812" stroke="#1d8a4f" stroke-width="1.5"/>
           <circle cx="315" cy="192" r="2" fill="#37ff8b" class="led" filter="url(#glow)"/>
@@ -772,7 +234,6 @@ body.loc-3{
           <line x1="322" y1="219" x2="322" y2="233" stroke="#37ff8b" class="fan"/>
         </g>
 
-        <!-- pilha de SSD na mesa -->
         <g id="r-ssd" class="r-item">
           <rect x="126" y="170" width="20" height="5" fill="#0d251c" stroke="#1d8a4f"/>
           <rect x="128" y="164" width="20" height="5" fill="#0d251c" stroke="#1d8a4f"/>
@@ -780,7 +241,6 @@ body.loc-3{
           <circle cx="142" cy="161" r="1.3" fill="#2de2ff" class="led d2" filter="url(#glow)"/>
         </g>
 
-        <!-- servidor torre grande -->
         <g id="r-server" class="r-item">
           <rect x="352" y="148" width="40" height="92" fill="#0b1812" stroke="#1d8a4f" stroke-width="1.5"/>
           <line x1="352" y1="168" x2="392" y2="168" stroke="#123528"/>
@@ -804,7 +264,7 @@ body.loc-3{
     </div>
   </section>
 
-  <!-- ============ LOJA ============ -->
+  <!-- LOJA -->
   <section id="shop-col">
     <h2>// mercado negro</h2>
     <div class="panel" style="padding:10px">
@@ -825,6 +285,7 @@ body.loc-3{
   </section>
 </main>
 
+<!-- duel modal -->
 <div id="ttt-modal">
   <div id="ttt-box">
     <h3>⚠ jogo_da_velha.exe</h3>
@@ -837,6 +298,7 @@ body.loc-3{
   </div>
 </div>
 
+<!-- invasion offer modal -->
 <div id="evt-modal">
   <div id="evt-box">
     <h3>⚡ invasao.exe</h3>
@@ -848,1187 +310,27 @@ body.loc-3{
   </div>
 </div>
 
+<!-- prestige modal -->
+<div id="prestige-modal">
+  <div id="prestige-box">
+    <h3>⚡ kernel_panic.exe</h3>
+    <p>resetar o mainframe apaga todo o progresso desta run, mas concede <b>exploits</b> que aumentam permanentemente todos os bits/s e o poder de clique. suas conquistas, duelos e histórico são preservados.</p>
+    <div id="prestige-gain"></div>
+    <div id="prestige-btns">
+      <button id="prestige-confirm">[executar kernel panic]</button>
+      <button id="prestige-cancel">[abortar]</button>
+    </div>
+  </div>
+</div>
+
 <div id="toasts"></div>
 
-<script>
-'use strict';
-/* ================= DADOS ================= */
-const GENS = [
-  {id:'script', nome:'script.sh',           desc:'Script de automação que minera sozinho',                  base:15,     prod:0.1,    tag:'>_'},
-  {id:'cpu',    nome:'CPU usada',           desc:'Xeon de leilão rodando no talo',                          base:100,    prod:1,      tag:'CPU'},
-  {id:'gpu',    nome:'GPU de mineração',    desc:'Meio torrada, mas ainda hasheia',                         base:1100,   prod:8,      tag:'GPU'},
-  {id:'ssd',    nome:'Farm de SSD',         desc:'Plota dados a noite inteira',                             base:12000,  prod:47,     tag:'SSD'},
-  {id:'srv',    nome:'Servidor torre',      desc:'Barulho de turbina, lucro de banco',                      base:130000, prod:260,    tag:'SRV'},
-  {id:'rack',   nome:'Rack de servidores',  desc:'Sua conta de luz chora',                                  base:1.4e6,  prod:1400,   tag:'RCK'},
-  {id:'bot',    nome:'Botnet',              desc:'Geladeiras inteligentes do mundo todo trabalham pra você',base:2e7,    prod:7800,   tag:'BOT'},
-  {id:'dtc',    nome:'Datacenter',          desc:'Você É a nuvem agora',                                    base:3.3e8,  prod:44000,  tag:'DTC'},
-  {id:'qtm',    nome:'Computador quântico', desc:'Quebra RSA no café da manhã',                             base:5.1e9,  prod:260000, tag:'QBT'},
-];
-const UPG = [
-  {id:'mouse',   nome:'Switches mecânicos',   desc:'Poder de clique ×2',                 custo:100,    tipo:'clickMult', val:2,   req:s=>s.clicks>=5},
-  {id:'oc_scr',  nome:'Overclock nos scripts',desc:'script.sh produz ×2',                   custo:500,    tipo:'genMult', gen:'script', val:2, req:s=>g('script')>=5},
-  {id:'teclado', nome:'Teclado mecânico',     desc:'Poder de clique ×2',                 custo:1200,   tipo:'clickMult', val:2,   req:s=>s.upg.includes('mouse')},
-  {id:'pasta',   nome:'Pasta térmica premium',desc:'CPUs produzem ×2',                      custo:5000,   tipo:'genMult', gen:'cpu', val:2, req:s=>g('cpu')>=5},
-  {id:'macro1',  nome:'Macro básico',         desc:'Clique ganha +1% do seu bits/s',     custo:8000,   tipo:'clickPct', val:0.01, req:s=>s.clicks>=75},
-  {id:'cafe',    nome:'Café infinito',        desc:'Toda produção +10%',                    custo:10000,  tipo:'allMult', val:1.1, req:s=>s.total>=5000},
-  {id:'monitor', nome:'Monitor curvo extra',  desc:'Poder de clique ×2',                 custo:25000,  tipo:'clickMult', val:2,   req:s=>s.upg.includes('teclado')},
-  {id:'drivers', nome:'Drivers hackeados',    desc:'GPUs produzem ×2',                      custo:50000,  tipo:'genMult', gen:'gpu', val:2, req:s=>g('gpu')>=5},
-  {id:'dedo',    nome:'Dedo biônico',         desc:'Chance de crítico 5% → 15%',            custo:120000, tipo:'crit', val:0.15, req:s=>s.clicks>=400},
-  {id:'macro2',  nome:'Macro avançado',       desc:'Clique ganha +4% do seu bits/s',     custo:150000, tipo:'clickPct', val:0.04, req:s=>s.upg.includes('macro1')},
-  {id:'raid',    nome:'RAID 0 sem medo',      desc:'Farms de SSD produzem ×2',              custo:400000, tipo:'genMult', gen:'ssd', val:2, req:s=>g('ssd')>=5},
-  {id:'luvas',   nome:'Luvas de fibra ótica', desc:'Poder de clique ×3',                 custo:1e6,    tipo:'clickMult', val:3,   req:s=>s.upg.includes('monitor')},
-  {id:'water',   nome:'Refrigeração líquida', desc:'Servidores produzem ×2',                custo:3e6,    tipo:'genMult', gen:'srv', val:2, req:s=>g('srv')>=5},
-  {id:'fibra',   nome:'Fibra ótica dedicada', desc:'Racks produzem ×2',                     custo:2.5e7,  tipo:'genMult', gen:'rack', val:2, req:s=>g('rack')>=5},
-  {id:'neural',  nome:'Implante neural',      desc:'Poder de clique ×5',                 custo:5e7,    tipo:'clickMult', val:5,   req:s=>s.upg.includes('luvas')},
-  {id:'worm',    nome:'Worm polimórfico',     desc:'Botnets produzem ×2',                   custo:1.5e8,  tipo:'genMult', gen:'bot', val:2, req:s=>g('bot')>=5},
-  {id:'ia',      nome:'IA otimizadora',       desc:'Toda produção ×2',                      custo:2e9,    tipo:'allMult', val:2,   req:s=>g('dtc')>=1},
-  {id:'ram',     nome:'RAM no talo',          desc:'script.sh produz ×3',                   custo:30000,  tipo:'genMult', gen:'script', val:3, req:s=>g('script')>=15},
-  {id:'arctic',  nome:'Ventilador na janela', desc:'CPUs produzem ×3',                      custo:120000, tipo:'genMult', gen:'cpu', val:3, req:s=>g('cpu')>=10},
-  {id:'vbios',   nome:'vBIOS desbloqueada',   desc:'GPUs produzem ×3',                      custo:8e5,    tipo:'genMult', gen:'gpu', val:3, req:s=>g('gpu')>=10},
-  /* -------- escritório (loc 1) -------- */
-  {loc:1, id:'estagiario', nome:'Estagiário de TI',         desc:'Toda produção +30%',           custo:3e9,   tipo:'allMult', val:1.3, req:s=>true},
-  {loc:1, id:'cafeteira',  nome:'Cafeteira industrial',     desc:'Poder de clique ×5',           custo:6e9,   tipo:'clickMult', val:5, req:s=>true},
-  {loc:1, id:'devops',     nome:'Time DevOps terceirizado', desc:'script.sh produz ×10',         custo:1.2e10,tipo:'genMult', gen:'script', val:10, req:s=>g('script')>=25},
-  {loc:1, id:'cadeira',    nome:'Cadeira ergonômica de 8k', desc:'Poder de clique ×4',           custo:2.5e10,tipo:'clickMult', val:4, req:s=>s.upg.includes('cafeteira')},
-  {loc:1, id:'arcond',     nome:'Ar-condicionado central',  desc:'Servidores produzem ×4',       custo:5e10,  tipo:'genMult', gen:'srv', val:4, req:s=>g('srv')>=10},
-  {loc:1, id:'kvm',        nome:'Switch KVM 8 portas',      desc:'Chance de crítico 15% → 20%',  custo:8e10,  tipo:'crit', val:0.2, req:s=>s.clicks>=1500},
-  {loc:1, id:'ultrawide',  nome:'Ultrawide 49 polegadas',   desc:'Clique ganha +6% do bits/s',   custo:1.5e11,tipo:'clickPct', val:0.06, req:s=>s.upg.includes('macro2')},
-  {loc:1, id:'linkded',    nome:'Link dedicado 10Gbps',     desc:'Racks produzem ×4',            custo:2.5e11,tipo:'genMult', gen:'rack', val:4, req:s=>g('rack')>=10},
-  {loc:1, id:'noc',        nome:'NOC 24/7',                 desc:'Botnets produzem ×4',          custo:4e11,  tipo:'genMult', gen:'bot', val:4, req:s=>g('bot')>=10},
-  {loc:1, id:'gerador',    nome:'Gerador a diesel',         desc:'Datacenters produzem ×4',      custo:6e11,  tipo:'genMult', gen:'dtc', val:4, req:s=>g('dtc')>=5},
-  {loc:1, id:'reuniao',    nome:'Sala de reunião (vazia)',  desc:'Toda produção +50%',           custo:8e11,  tipo:'allMult', val:1.5, req:s=>s.upg.length>=22},
-  {loc:1, id:'fortinet',   nome:'Firewall de enfeite',      desc:'Toda produção ×2',             custo:1.2e12,tipo:'allMult', val:2, req:s=>s.total>=5e11},
-  /* -------- NASA (loc 2) -------- */
-  {loc:2, id:'cracha',     nome:'Crachá de "visitante"',     desc:'Toda produção +50%',          custo:1.2e13, tipo:'allMult', val:1.5, req:s=>true},
-  {loc:2, id:'luvastro',   nome:'Luvas de astronauta',       desc:'Poder de clique ×8',          custo:2.5e13, tipo:'clickMult', val:8, req:s=>true},
-  {loc:2, id:'apollo',     nome:'Mainframe da Apollo 11',    desc:'CPUs produzem ×20',           custo:5e13,   tipo:'genMult', gen:'cpu', val:20, req:s=>g('cpu')>=25},
-  {loc:2, id:'cafelio',    nome:'Café liofilizado',          desc:'Toda produção +50%',          custo:9e13,   tipo:'allMult', val:1.5, req:s=>s.upg.includes('cracha')},
-  {loc:2, id:'antena',     nome:'Antena de espaço profundo', desc:'Botnets produzem ×8',         custo:1.8e14, tipo:'genMult', gen:'bot', val:8, req:s=>g('bot')>=15},
-  {loc:2, id:'telescopio', nome:'Telescópio "emprestado"',   desc:'Chance de crítico 20% → 25%', custo:3e14,   tipo:'crit', val:0.25, req:s=>s.clicks>=4000},
-  {loc:2, id:'satlink',    nome:'Uplink de satélite',        desc:'Clique ganha +10% do bits/s', custo:5e14,   tipo:'clickPct', val:0.10, req:s=>s.upg.includes('ultrawide')},
-  {loc:2, id:'criogenia',  nome:'Refrigeração criogênica',   desc:'Computadores quânticos ×5',   custo:8e14,   tipo:'genMult', gen:'qtm', val:5, req:s=>g('qtm')>=5},
-  {loc:2, id:'enxame',     nome:'Enxame de microssatélites', desc:'Racks produzem ×8',           custo:1.2e15, tipo:'genMult', gen:'rack', val:8, req:s=>g('rack')>=15},
-  {loc:2, id:'foguete',    nome:'Combustível de foguete',    desc:'Datacenters produzem ×8',     custo:2e15,   tipo:'genMult', gen:'dtc', val:8, req:s=>g('dtc')>=10},
-  {loc:2, id:'missao',     nome:'Controle da missão',        desc:'Toda produção ×2',            custo:3e15,   tipo:'allMult', val:2, req:s=>s.upg.length>=32},
-  {loc:2, id:'marte',      nome:'Rover de Marte minerando',  desc:'Toda produção ×2',            custo:5e15,   tipo:'allMult', val:2, req:s=>s.total>=2e15},
-  /* -------- Casa Branca (loc 3) -------- */
-  {loc:3, id:'crachaoval', nome:'Crachá da ala oeste',         desc:'Toda produção ×2',            custo:6e16,  tipo:'allMult', val:2, req:s=>true},
-  {loc:3, id:'orcamento',  nome:'Orçamento "confidencial"',    desc:'Poder de clique ×15',         custo:1.2e17,tipo:'clickMult', val:15, req:s=>true},
-  {loc:3, id:'nsa',        nome:'Backdoor da NSA',             desc:'Botnets produzem ×15',        custo:2.5e17,tipo:'genMult', gen:'bot', val:15, req:s=>g('bot')>=25},
-  {loc:3, id:'redfone',    nome:'Grampo no telefone vermelho', desc:'Clique ganha +20% do bits/s', custo:4e17,  tipo:'clickPct', val:0.20, req:s=>s.upg.includes('satlink')},
-  {loc:3, id:'bunker',     nome:'Datacenter no bunker',        desc:'Datacenters produzem ×15',    custo:7e17,  tipo:'genMult', gen:'dtc', val:15, req:s=>g('dtc')>=15},
-  {loc:3, id:'pentagono',  nome:'Quântico do Pentágono',       desc:'Computadores quânticos ×10',  custo:1.2e18,tipo:'genMult', gen:'qtm', val:10, req:s=>g('qtm')>=10},
-  {loc:3, id:'botao',      nome:'Botão vermelho (não aperte)', desc:'Chance de crítico 25% → 35%', custo:2e18,  tipo:'crit', val:0.35, req:s=>s.clicks>=8000},
-  {loc:3, id:'lobista',    nome:'Lobista em tempo integral',   desc:'Toda produção ×2',            custo:3e18,  tipo:'allMult', val:2, req:s=>s.upg.length>=42},
-  {loc:3, id:'execorder',  nome:'Ordem executiva 1337',        desc:'Toda produção ×3',            custo:5e18,  tipo:'allMult', val:3, req:s=>s.upg.includes('crachaoval')},
-  {loc:3, id:'af1',        nome:'Starlink no Air Force One',   desc:'Servidores produzem ×20',     custo:7e18,  tipo:'genMult', gen:'srv', val:20, req:s=>g('srv')>=25},
-  {loc:3, id:'deepstate',  nome:'Estado profundo',             desc:'script.sh produz ×100',       custo:9e18,  tipo:'genMult', gen:'script', val:100, req:s=>g('script')>=50},
-  {loc:3, id:'imunidade',  nome:'Imunidade diplomática',       desc:'Toda produção ×5',            custo:2e19,  tipo:'allMult', val:5, req:s=>s.total>=1e19},
-];
-const LOCAIS = [
-  {id:'quarto',     nome:'seu quarto',                   prompt:'root@h4ckfarm:~$',      mult:1,
-   wall:'#071009', floor:'#0a1410', grid:'#0c1f15'},
-  {id:'escritorio', nome:'escritório',                   prompt:'root@startup:~$',       mult:4,   custo:2e9,
-   req:s=>s.total>=5e8,
-   desc:'saia do quarto: escritório de verdade. novos upgrades + toda produção ×4',
-   flavor:'você saiu do quarto. CNPJ de fachada, ar-condicionado e upgrades corporativos liberados.',
-   wall:'#0a1016', floor:'#0c1320', grid:'#13243a'},
-  {id:'nasa',       nome:'NASA — sala de controle',      prompt:'root@nasa.gov:~#',      mult:20,  custo:5e12,
-   req:s=>s.total>=1e12,
-   desc:'"consultoria" na NASA. novos upgrades + toda produção ×20',
-   flavor:'a NASA "contratou" você. sala de controle inteira e upgrades espaciais liberados.',
-   wall:'#06101e', floor:'#081628', grid:'#11294a'},
-  {id:'casabranca', nome:'Casa Branca — sala de crise',  prompt:'root@whitehouse.gov:~#',mult:100, custo:1e16,
-   req:s=>s.total>=2e15,
-   desc:'o topo da cadeia. novos upgrades + toda produção ×100',
-   flavor:'ninguém sabe como você chegou na sala de crise. upgrades presidenciais liberados.',
-   wall:'#141008', floor:'#181206', grid:'#2e2410'},
-];
-const RANKS = [
-  [0,'n00b'],[1e3,'lammer'],[1e4,'script kiddie'],[1e5,'defacer'],
-  [1e6,'cracker'],[1e7,'hacker'],[1e8,'h4x0r de elite'],
-  [1e9,'fantasma cibernético'],[1e10,'lenda da deep web'],[1e11,'deus do mainframe'],
-];
-const ACH = [
-  {id:'c1',    nome:'Hello, World',        desc:'Execute seu primeiro comando',     cond:s=>s.clicks>=1},
-  {id:'c100',  nome:'Dedo nervoso',        desc:'50 comandos executados',           cond:s=>s.clicks>=50},
-  {id:'c1k',   nome:'LER chegando',        desc:'500 comandos executados',          cond:s=>s.clicks>=500},
-  {id:'c10k',  nome:'Túnel do carpo',      desc:'2.500 comandos executados',        cond:s=>s.clicks>=2500},
-  {id:'g1',    nome:'Automatizado',        desc:'Compre seu primeiro script.sh',    cond:s=>g('script')>=1},
-  {id:'g10',   nome:'DevOps raiz',         desc:'Tenha 10 script.sh',               cond:s=>g('script')>=10},
-  {id:'cpu1',  nome:'Silício quente',      desc:'Compre uma CPU',                   cond:s=>g('cpu')>=1},
-  {id:'gpu1',  nome:'Cooler de avião',     desc:'Compre uma GPU',                   cond:s=>g('gpu')>=1},
-  {id:'srv1',  nome:'Sysadmin',            desc:'Compre um servidor',               cond:s=>g('srv')>=1},
-  {id:'bot1',  nome:'Mestre das marionetes',desc:'Monte uma botnet',                cond:s=>g('bot')>=1},
-  {id:'qtm1',  nome:'Gato de Schrödinger', desc:'Compre um computador quântico',    cond:s=>g('qtm')>=1},
-  {id:'t1k',   nome:'Primeiro caixa',      desc:'Minere 1K bits no total',          cond:s=>s.total>=1e3},
-  {id:'t1m',   nome:'Milionário digital',  desc:'Minere 1M bits no total',          cond:s=>s.total>=1e6},
-  {id:'t1b',   nome:'Bilionário das sombras',desc:'Minere 1B bits no total',        cond:s=>s.total>=1e9},
-  {id:'u5',    nome:'Setup evoluindo',     desc:'Compre 5 upgrades',                cond:s=>s.upg.length>=5},
-  {id:'u15',   nome:'Setup dos sonhos',    desc:'Compre 15 upgrades',               cond:s=>s.upg.length>=15},
-  {id:'b100',  nome:'Renda passiva',       desc:'Alcance 100 bits/s',               cond:()=>bps>=100},
-  {id:'b10k',  nome:'Impressora de bits',  desc:'Alcance 10K bits/s',               cond:()=>bps>=1e4},
-  {id:'b1m',   nome:'Singularidade',       desc:'Alcance 1M bits/s',                cond:()=>bps>=1e6},
-  {id:'gold1', nome:'Pacote interceptado', desc:'Clique em um pacote de dados dourado', cond:s=>s.goldClicks>=1},
-  {id:'gold10',nome:'Sniffer profissional',desc:'Intercepte 10 pacotes dourados',   cond:s=>s.goldClicks>=10},
-  {id:'ttt1',  nome:'Velha hackeada',      desc:'Vença a IA de defesa no jogo da velha', cond:s=>s.ttt.wins>=1},
-  {id:'ttt3',  nome:'IA humilhada',        desc:'Vença 3 duelos contra a IA de defesa',  cond:s=>s.ttt.wins>=3},
-  {id:'ms3',   nome:'Operador de contratos',desc:'Complete 3 missões',              cond:s=>s.missionIdx>=3},
-  {id:'msall', nome:'Currículo criminoso', desc:'Complete todas as missões',        cond:s=>s.missionIdx>=MISSOES.length},
-  {id:'u30',   nome:'Acumulador compulsivo',desc:'Compre 30 upgrades',              cond:s=>s.upg.length>=30},
-  {id:'loc1',  nome:'Saiu do quarto',      desc:'Mude-se pro escritório',           cond:s=>s.loc>=1},
-  {id:'loc2',  nome:'Foguete não tem ré',  desc:'Assuma a sala de controle da NASA',cond:s=>s.loc>=2},
-  {id:'loc3',  nome:'Acima da lei',        desc:'Opere da Casa Branca',             cond:s=>s.loc>=3},
-];
-const MISSOES = [
-  {id:'m1', nome:'Aquecendo os dedos', desc:'Execute 15 comandos no terminal',
-   prog:s=>[s.clicks,15],
-   evento:'seus comandos chamaram atenção: um corretor da deep web comprou seus logs de sessão',
-   rew:()=>Math.max(100, bps*30+clickPow*60)},
-  {id:'m2', nome:'Automatize ou morra', desc:'Tenha 3 script.sh minerando por você',
-   prog:s=>[g('script'),3],
-   evento:'um dos seus scripts achou uma carteira esquecida num FTP aberto',
-   rew:()=>Math.max(250, bps*40+clickPow*80)},
-  {id:'m3', nome:'Força bruta literal', desc:'Tenha 2 CPUs usadas no talo',
-   prog:s=>[g('cpu'),2],
-   evento:'suas CPUs quebraram um hash valioso por pura força bruta',
-   rew:()=>Math.max(600, bps*45+clickPow*100)},
-  {id:'m4', nome:'Flow state', desc:'Encadeie 5 comandos no mesmo evento',
-   prog:s=>[s.bestCombo,5],
-   evento:'no flow absoluto, você fechou um contrato relâmpago de pentest',
-   rew:()=>Math.max(900, bps*50+clickPow*150)},
-  {id:'m5', nome:'Fazendinha de GPU', desc:'Tenha 3 GPUs de mineração',
-   prog:s=>[g('gpu'),3],
-   evento:'sua farm de GPU minerou um bloco raro de madrugada',
-   rew:()=>Math.max(3000, bps*60+clickPow*200)},
-  {id:'m6', nome:'Sniffer de elite', desc:'Intercepte 3 pacotes de dados dourados',
-   prog:s=>[s.goldClicks,3],
-   evento:'os pacotes interceptados tinham credenciais de um banco offshore',
-   rew:()=>Math.max(6000, bps*90+clickPow*250)},
-  {id:'m7', nome:'Setup decente', desc:'Instale 4 upgrades no seu setup',
-   prog:s=>[s.upg.length,4],
-   evento:'com o setup novo, o mercado negro liberou um contrato premium',
-   buffMult:2, buffSecs:120},
-  {id:'m8', nome:'Acumulador de dados', desc:'Tenha 2 farms de SSD plotando',
-   prog:s=>[g('ssd'),2],
-   evento:'seus SSDs guardavam um dump que foi a leilão na deep web',
-   rew:()=>Math.max(25000, bps*90+clickPow*300)},
-  {id:'m9', nome:'Mãos de aço', desc:'Execute 300 comandos no terminal',
-   prog:s=>[s.clicks,300],
-   evento:'300 comandos depois, sua reputação atraiu um cliente anônimo generoso',
-   rew:()=>Math.max(40000, bps*120+clickPow*400)},
-  {id:'m10', nome:'Sala de máquinas', desc:'Tenha 2 servidores torre roncando',
-   prog:s=>[g('srv'),2],
-   evento:'seu servidor hospedou um site "questionável" por uma noite — pagamento adiantado',
-   rew:()=>Math.max(250000, bps*120+clickPow*500)},
-  {id:'m11', nome:'Exército de geladeiras', desc:'Monte uma botnet',
-   prog:s=>[g('bot'),1],
-   evento:'sua botnet foi alugada pra um "teste de estresse" muito bem pago',
-   buffMult:3, buffSecs:90},
-  {id:'m12', nome:'Você é a nuvem', desc:'Compre um datacenter',
-   prog:s=>[g('dtc'),1],
-   evento:'seu datacenter fechou contrato de hospedagem discreta com meio submundo',
-   rew:()=>Math.max(5e7, bps*180+clickPow*1000)},
-];
-const CMDS = [
-  {c:'ls',                                           m:1,   out:['exploits/  wallet.dat  botnet.sh']},
-  {c:'top',                                          m:1,   out:['CPU {n}% — minerador comendo tudo']},
-  {c:'clear',                                        m:1,   out:['terminal limpo. evidências? nunca vi']},
-  {c:'pwd',                                          m:1,   out:['/root/h4ckfarm']},
-  {c:'whoami',                                       m:1,   out:['root (obviamente)']},
-  {c:'ls -la',                                       m:1,   out:['drwxr-xr-x  exploits/','-rw-------  wallet.dat','-rwxr-xr-x  botnet.sh']},
-  {c:'cd /root/exploits',                            m:1,   out:['{n} exploits prontos pra uso']},
-  {c:'ping -t 8.8.8.8',                              m:1.5, out:['Resposta de 8.8.8.8: bytes=32 tempo={n}ms TTL=117','Resposta de 8.8.8.8: bytes=32 tempo={n}ms TTL=117','rota até o DNS do Google mapeada']},
-  {c:'sudo su -',                                    m:1.5, out:['[sudo] senha aceita','agora você é root de verdade']},
-  {c:'cat /etc/passwd',                              m:1.5, out:['root:x:0:0:root:/root:/bin/bash','{n} usuários encontrados']},
-  {c:'netstat -tulpn',                               m:1.5, out:['tcp  0.0.0.0:22  LISTEN  sshd','{n} conexões suspeitas (todas suas)']},
-  {c:'ifconfig eth0 promisc',                        m:1.5, out:['modo promíscuo ativado','farejando pacotes da rede...']},
-  {c:'nmap -sS 192.168.0.1',                         m:2,   out:['22/tcp  open  ssh','80/tcp  open  http','{n} portas abertas no alvo']},
-  {c:'ssh root@10.0.0.66 -p 2222',                   m:2,   out:['handshake ok, chave aceita','shell remoto estabelecido em {n}ms']},
-  {c:'chmod +x exploit.sh && ./exploit.sh',          m:2,   out:['[+] payload injetado','[+] shell reverso na porta {n}']},
-  {c:'tail -f /var/log/auth.log',                    m:2,   out:['Failed password for admin','Accepted password for root','admin ainda usa senha "123456"']},
-  {c:'tcpdump -i eth0 port 443 -w loot.pcap',        m:2.5, out:['{n} pacotes capturados','tem coisa boa nesse .pcap']},
-  {c:'hydra -l admin -P rockyou.txt ssh://10.0.0.1', m:3,   out:['[22][ssh] host: 10.0.0.1  login: admin  senha: senha123','brute force concluído em {n}s']},
-  {c:'john --wordlist=rockyou.txt hashes.txt',       m:3,   out:['{n} hashes quebrados','as senhas eram todas "123456"']},
-  {c:'sqlmap -u "http://alvo.com?id=1" --dump',      m:3,   out:['[INFO] parâmetro id é injetável','{n} tabelas dumpadas']},
-  {c:'aircrack-ng -w rockyou.txt captura.cap',       m:3,   out:['KEY FOUND! [ senha_do_wifi ]','wifi do vizinho: liberado']},
-];
-const LOG_POOL = [
-  'varredura de portas concluída sem alarmes',
-  'café.exe executado com sucesso',
-  'baixando mais RAM... (não funciona assim)',
-  'wifi dos vizinhos: comprometido',
-  'antivírus desativado (era estorvo)',
-  'firmware da geladeira atualizado pra minerar',
-  'logs limpos. que logs?',
-  'VPN tripla ativada, ping de 900ms',
-  'achou uma wordlist em pt-BR. eficiência +200%',
-  'o admin usava admin/admin de novo',
-  'criptografia quântica? ainda não inventaram defesa',
-  'backup feito. confia.',
-  'energia do quarteirão oscilou. foi você.',
-  'mercado negro com promoção de GPU',
-];
-/* ================= ESTADO ================= */
-const SAVE_KEY = 'h4ckfarm_save_v1';
-let S = defaultState();
-function defaultState(){
-  return {
-    bits:0, total:0, clicks:0, goldClicks:0, adsClosed:0, loc:0,
-    gens:{}, upg:[], ach:[], seen:['script'],
-    missionIdx:0, bestCombo:0, ttt:{wins:0,losses:0,draws:0},
-    muted:false, started:Date.now(), saved:Date.now(),
-  };
-}
-function g(id){ return S.gens[id]||0; }
-
-let bps=0, clickPow=1, critChance=0.05;
-let lastTick=Date.now(), nextPacket=Date.now()+30000, packetEl=null;
-let nextDuel=Date.now()+120000, duelOpen=false, tttB=null, tttLock=false, duelPrize=0;
-let nextEvento=Date.now()+45000, eventOn=false, evtModalOpen=false;
-let nextAds=Date.now()+90000, adsOpen=0, adsPending=0, adsBits=0, cascadeIdx=0;
-let buff={mult:1,until:0};
-let curTab='hw', curQty=1;
-let rankIdx=0;
-
-/* ================= CÁLCULO ================= */
-function recalc(){
-  let allM=1, clickM=1, clickPct=0;
-  critChance=0.05;
-  const genM={};
-  for(const u of UPG){
-    if(!S.upg.includes(u.id)) continue;
-    if(u.tipo==='allMult') allM*=u.val;
-    else if(u.tipo==='clickMult') clickM*=u.val;
-    else if(u.tipo==='clickPct') clickPct+=u.val;
-    else if(u.tipo==='crit') critChance=Math.max(critChance,u.val);
-    else if(u.tipo==='genMult') genM[u.gen]=(genM[u.gen]||1)*u.val;
-  }
-  allM*=LOCAIS[S.loc].mult;
-  bps=0;
-  for(const gen of GENS){
-    bps += g(gen.id)*gen.prod*(genM[gen.id]||1);
-  }
-  bps*=allM;
-  clickPow = 1*clickM + bps*clickPct;
-}
-function costOf(gen,k){
-  let owned=g(gen.id), total=0;
-  for(let i=0;i<k;i++) total+=gen.base*Math.pow(1.15,owned+i);
-  return total;
-}
-function maxBuy(gen){
-  let owned=g(gen.id), money=S.bits, n=0;
-  while(n<500){
-    const c=gen.base*Math.pow(1.15,owned+n);
-    if(money<c) break;
-    money-=c; n++;
-  }
-  return n;
-}
-function fmt(n){
-  if(!isFinite(n)) return '∞';
-  if(n<1000) return Math.floor(n).toString();
-  const u=['K','M','B','T','Qa','Qi','Sx'];
-  let i=-1;
-  while(n>=1000 && i<u.length-1){ n/=1000; i++; }
-  return (n<10?n.toFixed(2):n<100?n.toFixed(1):Math.floor(n).toString())+u[i];
-}
-function fmtRate(n){
-  if(n>0 && n<10 && n%1!==0) return n.toFixed(1);
-  return fmt(n);
-}
-/* ================= ÁUDIO ================= */
-let AC=null;
-function audio(){ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)(); return AC; }
-function beep(freq,dur=0.06,type='square',gain=0.035,delay=0){
-  if(S.muted) return;
-  try{
-    const ctx=audio(), t=ctx.currentTime+delay;
-    const o=ctx.createOscillator(), gn=ctx.createGain();
-    o.type=type; o.frequency.value=freq;
-    gn.gain.setValueAtTime(gain,t);
-    gn.gain.exponentialRampToValueAtTime(0.0001,t+dur);
-    o.connect(gn).connect(ctx.destination);
-    o.start(t); o.stop(t+dur+0.02);
-  }catch(e){}
-}
-const sndClick =()=>beep(180+Math.random()*60,0.04);
-const sndCrit  =()=>{beep(440,0.08,'sawtooth',0.05);beep(880,0.1,'square',0.04,0.06)};
-const sndBuy   =()=>{beep(330,0.06);beep(495,0.08,'square',0.04,0.07)};
-const sndAch   =()=>{beep(523,0.09,'triangle',0.05);beep(659,0.09,'triangle',0.05,0.09);beep(784,0.14,'triangle',0.05,0.18)};
-const sndGold  =()=>{beep(700,0.07,'sine',0.06);beep(1050,0.07,'sine',0.06,0.08);beep(1400,0.14,'sine',0.06,0.16)};
-const sndRank  =()=>{beep(110,0.2,'sawtooth',0.06);beep(220,0.2,'sawtooth',0.05,0.15);beep(440,0.3,'sawtooth',0.05,0.3)};
-/* ================= DOM REFS ================= */
-const $=q=>document.querySelector(q);
-const elBits=$('#bits'), elBps=$('#bps'), elTerm=$('#terminal'),
-      elTermLines=$('#term-lines'), elFloat=$('#float-layer'),
-      elLog=$('#log-list'), elShop=$('#shop-list'), elOwned=$('#owned-upg'),
-      elToasts=$('#toasts'), elRankName=$('#rank-name'),
-      elRankFill=$('#rank-fill'), elRankNext=$('#rank-next');
-/* ================= TERMINAL / COMANDOS ================= */
-const elTyped=$('#typed'), elGhost=$('#ghost'), elEvento=$('#evento'),
-      elKbd=$('#kbd-input'), elPrompt=$('#term-prompt');
-let curCmd=null, typedLen=0, combo=0, lastCmdAt=0;
-
-function termLine(txt,raw){
-  const li=document.createElement('div');
-  li.textContent=raw?txt:LOCAIS[S.loc].prompt+' '+txt;
-  if(raw) li.style.color='#5fae84';
-  elTermLines.appendChild(li);
-  while(elTermLines.children.length>14) elTermLines.firstChild.remove();
-}
-function subst(t){
-  return t.replace(/\{n\}/g,()=>Math.floor(Math.random()*900+100))
-          .replace(/\{h\}/g,()=>Math.floor(Math.random()*0xFFFF).toString(16).toUpperCase());
-}
-function newCmd(){
-  /* combo desloca a janela de sorteio pra comandos mais longos e valiosos */
-  const start=Math.min(Math.floor(combo*0.8), CMDS.length-4);
-  curCmd=CMDS[start+Math.floor(Math.random()*4)];
-  typedLen=0;
-  renderPrompt();
-}
-function renderPrompt(){
-  if(eventOn&&curCmd){
-    elPrompt.style.display='block';
-    elTyped.textContent=curCmd.c.slice(0,typedLen);
-    elGhost.textContent=curCmd.c.slice(typedLen);
-  } else {
-    elPrompt.style.display='none';
-    elTyped.textContent='';
-    elGhost.textContent='';
-  }
-}
-const EVENT_MS=10000, EVENT_MIN_MS=4000, EVENT_HARD_MS=120000;
-let eventBits=0, eventStart=0;
-function eventMult(){ return 2+0.4*Math.min(combo,20); }
-/* janela de tempo por comando encolhe conforme o combo cresce */
-function cmdWindow(){ return Math.max(EVENT_MIN_MS, EVENT_MS-combo*350); }
-const elEvtMult=$('#evento-mult'), elEvtFill=$('#evento-fill'),
-      elEvtSecs=$('#evento-secs'), elEvtGain=$('#evento-gain'),
-      elEvtTotal=$('#evento-total');
-const elEvtModal=$('#evt-modal');
-function offerEvento(){
-  evtModalOpen=true;
-  $('#evt-msg').textContent='uma janela de invasão foi detectada na rede. digite os comandos exibidos antes do temporizador zerar — cada ENTER renova o tempo e aumenta o multiplicador. quanto mais comandos você encadeia, mais longos eles ficam e menos tempo você tem. o evento dura no máximo 2 minutos.';
-  elEvtModal.classList.add('open');
-  log('janela de invasão detectada — aceite pra digitar e saquear','evt');
-  sndGold();
-}
-$('#evt-accept').addEventListener('click',()=>{
-  elEvtModal.classList.remove('open');
-  evtModalOpen=false;
-  startEvento();
-});
-$('#evt-ignore').addEventListener('click',()=>{
-  elEvtModal.classList.remove('open');
-  evtModalOpen=false;
-  log('você ignorou a janela de invasão. ela fechou.','warn');
-  nextEvento=Date.now()+(60+Math.random()*60)*1000;
-});
-function startEvento(){
-  eventOn=true; combo=0; eventBits=0; lastCmdAt=Date.now(); eventStart=Date.now();
-  elEvento.classList.add('on');
-  refreshEventoUI();
-  newCmd();
-  toast('⚡ EVENTO: INVASÃO','digite os comandos antes do temporizador zerar — cada ENTER renova o tempo','gold');
-  termLine('!! janela de invasão aberta — digite os comandos !!',true);
-  document.body.classList.remove('glitching'); void document.body.offsetWidth;
-  document.body.classList.add('glitching');
-  elKbd.focus({preventScroll:true});
-}
-function refreshEventoUI(){
-  elEvento.classList.remove('low');
-  elEvtMult.textContent='bits ×'+eventMult().toFixed(1);
-  elEvtSecs.textContent=(cmdWindow()/1000).toFixed(1)+'s';
-  elEvtFill.style.width='100%';
-  elEvtGain.innerHTML='saqueado neste evento: <b>'+fmt(eventBits)+'</b> bits — cada comando completo renova o temporizador';
-  updateEvtTotal();
-}
-function updateEvtTotal(){
-  const tot=Math.max(0, EVENT_HARD_MS-(Date.now()-eventStart));
-  elEvtTotal.textContent='evento encerra em '+Math.ceil(tot/1000)+'s';
-}
-function updateEventoTimer(rem){
-  elEvtFill.style.width=(rem*100)+'%';
-  elEvtSecs.textContent=(rem*cmdWindow()/1000).toFixed(1)+'s';
-  updateEvtTotal();
-  elEvento.classList.toggle('low',rem<0.3);
-}
-function endEvento(maxed){
-  eventOn=false; combo=0; curCmd=null;
-  elEvento.classList.remove('on','low');
-  renderPrompt();
-  toast('EVENTO ENCERRADO',(maxed?'limite de 2 minutos atingido':'o temporizador zerou')+' — você saqueou '+fmt(eventBits)+' bits durante a invasão','');
-  log('evento encerrado: +'+fmt(eventBits)+' bits saqueados no total','evt');
-  beep(160,0.22,'sawtooth',0.05);
-  eventBits=0;
-  nextEvento=Date.now()+(60+Math.random()*60)*1000;
-}
-function typoFlash(){
-  elPrompt.classList.remove('typo'); void elPrompt.offsetWidth;
-  elPrompt.classList.add('typo');
-  beep(110,0.08,'sawtooth',0.04);
-}
-function completeCmd(){
-  combo++;
-  lastCmdAt=Date.now();
-  if(combo>S.bestCombo) S.bestCombo=combo;
-  const crit=Math.random()<critChance;
-  const bonus=clickPow*clickBuffMult()*curCmd.c.length*curCmd.m*eventMult()*(crit?10:1);
-  S.bits+=bonus; S.total+=bonus; S.clicks++;
-  eventBits+=bonus;
-  termLine(curCmd.c);
-  for(const o of curCmd.out) termLine(subst(o),true);
-  spawnFloat(elTerm.clientWidth/2,elTerm.clientHeight/2,'+'+fmt(bonus)+(crit?' ⚡CRIT':''),crit);
-  if(crit){ sndCrit(); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }
-  else sndBuy();
-  refreshEventoUI();
-  checkAch(); updateRoom();
-  newCmd();
-}
-function handleKey(key){
-  if(!eventOn||!curCmd) return;
-  if(key==='Enter'){
-    if(typedLen===curCmd.c.length) completeCmd();
-    else typoFlash();
-    return;
-  }
-  if(key==='Backspace'){
-    if(typedLen>0){ typedLen--; renderPrompt(); }
-    return;
-  }
-  if(key.length!==1) return;
-  if(typedLen<curCmd.c.length && key===curCmd.c[typedLen]){
-    typedLen++;
-    const gain=clickPow*clickBuffMult()*eventMult();
-    S.bits+=gain; S.total+=gain;
-    eventBits+=gain;
-    beep(500+Math.random()*200,0.025,'square',0.018);
-    if(typedLen%4===0)
-      spawnFloat(40+Math.random()*(elTerm.clientWidth-80),elTerm.clientHeight-70,'+'+fmt(gain),false,true);
-    renderPrompt();
-  } else {
-    typoFlash();
-  }
-}
-document.addEventListener('keydown',e=>{
-  if(duelOpen||!eventOn) return;
-  if(e.ctrlKey||e.metaKey||e.altKey) return;
-  if(e.key==='Enter'||e.key==='Backspace'||e.key.length===1){
-    e.preventDefault();
-    handleKey(e.key);
-  }
-});
-elKbd.addEventListener('beforeinput',e=>{ /* teclado virtual mobile */
-  e.preventDefault();
-  if(e.inputType==='insertText'&&e.data){ for(const ch of e.data) handleKey(ch); }
-  else if(e.inputType==='deleteContentBackward') handleKey('Backspace');
-});
-elTerm.addEventListener('pointerdown',e=>{
-  if(e.target.classList.contains('packet')) return;
-  if(eventOn){ elKbd.focus({preventScroll:true}); return; }
-  mineClick(e);
-});
-function mineClick(e){
-  const crit=Math.random()<critChance;
-  const gain=clickPow*clickBuffMult()*(crit?10:1);
-  S.bits+=gain; S.total+=gain; S.clicks++;
-  const r=elTerm.getBoundingClientRect();
-  spawnFloat(e.clientX-r.left,e.clientY-r.top,'+'+fmt(gain)+(crit?' ⚡CRIT':''),crit);
-  if(crit){
-    sndCrit();
-    document.body.classList.remove('shake'); void document.body.offsetWidth;
-    document.body.classList.add('shake');
-  } else sndClick();
-  termLine(CMDS[Math.floor(Math.random()*CMDS.length)].c);
-  checkAch(); updateRoom();
-}
-function spawnFloat(x,y,txt,crit,mini){
-  const s=document.createElement('span');
-  s.className='float-num'+(crit?' crit':'')+(mini?' mini':'');
-  s.textContent=txt;
-  s.style.left=Math.max(30,Math.min(x,elTerm.clientWidth-30))+'px';
-  s.style.top=Math.max(30,y)+'px';
-  elFloat.appendChild(s);
-  setTimeout(()=>s.remove(),1300);
-}
-/* ================= PACOTE DOURADO ================= */
-function spawnPacket(){
-  if(packetEl) return;
-  const d=document.createElement('div');
-  d.className='packet'; d.textContent='$';
-  d.style.left=(20+Math.random()*(elTerm.clientWidth-90))+'px';
-  d.style.top=(20+Math.random()*(elTerm.clientHeight-90))+'px';
-  d.addEventListener('pointerdown',ev=>{
-    ev.stopPropagation();
-    const bonus=Math.max(50, clickPow*200, bps*60);
-    S.bits+=bonus; S.total+=bonus; S.goldClicks++;
-    toast('PACOTE INTERCEPTADO','+'+fmt(bonus)+' bits roubados do tráfego','gold');
-    log('pacote de dados dourado interceptado: +'+fmt(bonus)+' bits','warn');
-    sndGold();
-    killPacket();
-    checkAch();
-  });
-  elTerm.appendChild(d);
-  packetEl=d;
-  setTimeout(()=>{ if(packetEl===d) killPacket(); },9000);
-}
-function killPacket(){
-  if(packetEl){ packetEl.remove(); packetEl=null; }
-  nextPacket=Date.now()+(45+Math.random()*70)*1000;
-}
-/* ================= ADWARE (popups de propaganda) ================= */
-const AD_POOL=[
-  ['🎰 PARABÉNS!!!','você é o visitante 1.000.000 — resgate seu prêmio'],
-  ['💊 TRUQUE SECRETO','hackers ODEIAM esse truque de mineração'],
-  ['🔥 90% OFF','GPUs quase de graça (fonte: confia)'],
-  ['👁 ALERTA','sua webcam pode estar ligada AGORA'],
-  ['🤑 RENDA EXTRA','ganhe bits DORMINDO com 1 clique'],
-  ['💘 ENCONTROS','hackers solteiros na sua área'],
-  ['🛡 VÍRUS DETECTADO','seu PC está infectado (a infecção é você)'],
-  ['🏆 SORTEIO','clique pra ganhar um datacenter usado'],
-];
-function adReward(){ return Math.max(25, clickPow*40, bps*8); }
-function screenFloat(x,y,txt){
-  const s=document.createElement('span');
-  s.className='float-num screen';
-  s.textContent=txt;
-  s.style.left=x+'px'; s.style.top=y+'px';
-  document.body.appendChild(s);
-  setTimeout(()=>s.remove(),1300);
-}
-function adCascadePos(i){
-  const W=240, H=150, stepX=32, stepY=30, m=16;
-  const perDiagX=Math.floor((innerWidth -m-W)/stepX);
-  const perDiagY=Math.floor((innerHeight-m-H)/stepY);
-  const perDiag=Math.max(3, Math.min(perDiagX, perDiagY));
-  const cycle=Math.floor(i/perDiag);   // each wrap shifts right so colunas não empilham igual
-  const k=i%perDiag;
-  let x=m + k*stepX + cycle*46;
-  let y=m + k*stepY;
-  const maxX=Math.max(m, innerWidth -W-m);
-  if(x>maxX) x=m + (x-m)%(maxX-m+1);   // diagonal volta pro topo quando estoura a direita
-  return [x,y];
-}
-function spawnAd(){
-  if(adsOpen>=18) return;
-  const [title,body]=AD_POOL[Math.floor(Math.random()*AD_POOL.length)];
-  const d=document.createElement('div');
-  d.className='popup-ad';
-  d.innerHTML='<div class="ad-bar"><span></span><span class="ad-x">✕</span></div><div class="ad-body"></div>';
-  d.querySelector('.ad-bar span').textContent=title;
-  const bd=d.querySelector('.ad-body');
-  bd.textContent=body;
-  const small=document.createElement('span');
-  small.className='ad-small';
-  small.textContent='feche no ✕ pra faturar — clicar no anúncio abre MAIS';
-  bd.appendChild(small);
-  const [cx,cy]=adCascadePos(cascadeIdx++);
-  d.style.left=cx+'px';
-  d.style.top=cy+'px';
-  d.style.zIndex=80+cascadeIdx;
-  d.style.transform='rotate('+(Math.random()*4-2).toFixed(1)+'deg)';
-  d.querySelector('.ad-x').addEventListener('pointerdown',ev=>{
-    ev.stopPropagation();
-    const gain=adReward();
-    S.bits+=gain; S.total+=gain; S.adsClosed=(S.adsClosed||0)+1;
-    adsBits+=gain; adsOpen--;
-    screenFloat(ev.clientX,ev.clientY,'+'+fmt(gain));
-    sndBuy();
-    d.remove();
-    if(adsOpen<=0&&adsPending<=0) endAds();
-  });
-  bd.addEventListener('pointerdown',ev=>{
-    ev.stopPropagation();
-    beep(140,0.1,'sawtooth',0.05);
-    spawnAd();
-  });
-  document.body.appendChild(d);
-  adsOpen++;
-}
-function spawnAdBurst(){
-  adsBits=0;
-  nextAds=Infinity;
-  cascadeIdx=0;
-  const n=8+Math.floor(Math.random()*5);
-  adsPending=n;
-  for(let i=0;i<n;i++) setTimeout(()=>{ adsPending--; spawnAd(); }, i*(120+Math.random()*110));
-  log('ADWARE!! popups brotando na tela — feche tudo no ✕','warn');
-  termLine('!! adware detectado — feche as janelas !!',true);
-  beep(180,0.15,'sawtooth',0.06); beep(140,0.15,'sawtooth',0.06,0.18);
-}
-function endAds(){
-  adsOpen=0;
-  toast('ADWARE REMOVIDO','você faturou '+fmt(adsBits)+' bits fechando propaganda','gold');
-  log('adware limpo: +'+fmt(adsBits)+' bits de "consultoria"','evt');
-  sndGold();
-  checkAch();
-  nextAds=Date.now()+(120+Math.random()*150)*1000;
-}
-/* ================= LOG ================= */
-function log(txt,cls){
-  const li=document.createElement('li');
-  li.textContent=txt;
-  if(cls) li.className=cls;
-  elLog.appendChild(li);
-  while(elLog.children.length>9) elLog.firstChild.remove();
-}
-setInterval(()=>{ if(Math.random()<0.6) log(LOG_POOL[Math.floor(Math.random()*LOG_POOL.length)]); },7000);
-/* ================= BUFF TEMPORÁRIO ================= */
-function applyBuff(mult,secs){ buff={mult,until:Date.now()+secs*1000}; }
-function buffMult(){ return Date.now()<buff.until?buff.mult:1; }
-/* ================= FORMATAR PC (buff de click) ================= */
-const FMT_MULT=5, FMT_SECS=12, FMT_CD=90;
-let clickBuffUntil=0, fmtReadyAt=0;
-const elFmtBtn=$('#format-btn');
-function clickBuffMult(){ return Date.now()<clickBuffUntil?FMT_MULT:1; }
-elFmtBtn.addEventListener('click',()=>{
-  const now=Date.now();
-  if(now<fmtReadyAt) return;
-  clickBuffUntil=now+FMT_SECS*1000;
-  fmtReadyAt=now+FMT_CD*1000;
-  elTermLines.innerHTML='';
-  termLine('formatando /dev/sda1 ...',true);
-  termLine('reinstalando kernel otimizado pra mineração',true);
-  termLine('sistema limpo — clique como se não houvesse amanhã',true);
-  toast('💾 PC FORMATADO','clicks ×'+FMT_MULT+' por '+FMT_SECS+'s — aproveita que tá rápido','gold');
-  log('PC formatado: clicks ×'+FMT_MULT+' por '+FMT_SECS+'s','evt');
-  document.body.classList.remove('glitching'); void document.body.offsetWidth;
-  document.body.classList.add('glitching');
-  sndGold();
-});
-function updateFmtBtn(){
-  const now=Date.now();
-  if(now<clickBuffUntil){
-    elFmtBtn.disabled=true;
-    elFmtBtn.classList.add('active-buff');
-    elFmtBtn.textContent='⚡ TURBINADO — clicks ×'+FMT_MULT+' por '+Math.ceil((clickBuffUntil-now)/1000)+'s';
-  } else if(now<fmtReadyAt){
-    elFmtBtn.disabled=true;
-    elFmtBtn.classList.remove('active-buff');
-    elFmtBtn.textContent='💾 reinstalando sistema... pronto em '+Math.ceil((fmtReadyAt-now)/1000)+'s';
-  } else {
-    elFmtBtn.disabled=false;
-    elFmtBtn.classList.remove('active-buff');
-    elFmtBtn.textContent='💾 FORMATAR PC — clicks ×'+FMT_MULT+' por '+FMT_SECS+'s';
-  }
-}
-/* ================= MISSÕES ================= */
-const elMsName=$('#ms-name'), elMsDesc=$('#ms-desc'),
-      elMsFill=$('#ms-fill'), elMsProg=$('#ms-prog');
-function curMission(){ return MISSOES[S.missionIdx]||null; }
-function renderMission(){
-  const m=curMission();
-  if(!m){
-    elMsName.textContent='todas as missões concluídas';
-    elMsDesc.textContent='a rede inteira conhece seu nick. descanse, lenda.';
-    elMsFill.style.width='100%';
-    elMsProg.textContent=MISSOES.length+'/'+MISSOES.length;
-    return;
-  }
-  elMsName.textContent='['+(S.missionIdx+1)+'/'+MISSOES.length+'] '+m.nome;
-  elMsDesc.textContent=m.desc;
-}
-function missionTick(){
-  const m=curMission();
-  if(!m) return;
-  const [cur,goal]=m.prog(S);
-  elMsFill.style.width=Math.min(100,cur/goal*100)+'%';
-  elMsProg.textContent=fmt(Math.min(cur,goal))+' / '+fmt(goal);
-  if(cur<goal) return;
-  // missão concluída — evento temático + recompensa
-  S.missionIdx++;
-  let rewTxt='';
-  if(m.buffMult){
-    applyBuff(m.buffMult,m.buffSecs);
-    rewTxt='produção ×'+m.buffMult+' por '+m.buffSecs+'s';
-  }
-  if(m.rew){
-    const b=Math.floor(m.rew());
-    S.bits+=b; S.total+=b;
-    rewTxt=(rewTxt?rewTxt+' + ':'')+fmt(b)+' bits';
-  }
-  toast('✔ MISSÃO: '+m.nome.toUpperCase(), m.evento+' — recompensa: '+rewTxt,'gold');
-  log('missão concluída: '+m.nome+' ('+rewTxt+')','evt');
-  termLine(m.evento,true);
-  sndAch();
-  document.body.classList.remove('glitching'); void document.body.offsetWidth;
-  document.body.classList.add('glitching');
-  renderMission();
-  checkAch();
-}
-/* ================= DUELO: JOGO DA VELHA ================= */
-const LINES3=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-const elTTT=$('#ttt-modal'), elBoard=$('#ttt-board'), elTttMsg=$('#ttt-msg'),
-      elTttA=$('#ttt-accept'), elTttC=$('#ttt-close');
-const sndDuel=()=>{beep(220,0.12,'sawtooth',0.05);beep(165,0.14,'sawtooth',0.05,0.12)};
-function openDuel(){
-  duelOpen=true;
-  duelPrize=Math.max(500,Math.floor(bps*120+clickPow*300));
-  elTttMsg.textContent='uma IA de defesa antiga trava um cofre de '+fmt(duelPrize)+
-    ' bits. ela só libera se você vencer no jogo da velha. empate paga 25%. perder não custa nada (só seu orgulho).';
-  elBoard.classList.remove('on'); elBoard.innerHTML='';
-  tttB=null;
-  elTttA.style.display='';
-  elTttC.textContent='[recusar]';
-  elTTT.classList.add('open');
-  log('IA de defesa te desafiou pra um duelo','evt');
-  sndDuel();
-}
-function startDuel(){
-  tttB=Array(9).fill(null); tttLock=false;
-  elTttA.style.display='none';
-  elTttC.textContent='[fugir]';
-  elBoard.classList.add('on');
-  elTttMsg.textContent='você é X. a IA é O. boa sorte, operador.';
-  renderTTT();
-}
-function renderTTT(){
-  elBoard.innerHTML='';
-  tttB.forEach((v,i)=>{
-    const c=document.createElement('div');
-    c.className='ttt-cell'+(v==='O'?' o':v==='X'?' x':'');
-    c.textContent=v||'';
-    if(!v) c.addEventListener('pointerdown',()=>playTTT(i));
-    elBoard.appendChild(c);
-  });
-}
-function winnerTTT(b){
-  for(const L of LINES3){
-    if(b[L[0]]&&b[L[0]]===b[L[1]]&&b[L[1]]===b[L[2]]) return {w:b[L[0]],line:L};
-  }
-  if(b.every(x=>x)) return {w:'draw'};
-  return null;
-}
-function botMove(b){
-  const empty=b.map((v,i)=>v?null:i).filter(v=>v!==null);
-  if(!empty.length) return null;
-  // IA "antiga" vacila às vezes — dá pra vencer
-  if(Math.random()<0.25) return empty[Math.floor(Math.random()*empty.length)];
-  const tryLine=who=>{
-    for(const L of LINES3){
-      const vals=L.map(i=>b[i]);
-      if(vals.filter(v=>v===who).length===2 && vals.includes(null))
-        return L[vals.indexOf(null)];
-    }
-    return null;
-  };
-  let m=tryLine('O'); if(m!=null) return m;
-  m=tryLine('X');     if(m!=null) return m;
-  if(b[4]==null) return 4;
-  const corners=[0,2,6,8].filter(i=>!b[i]);
-  if(corners.length) return corners[Math.floor(Math.random()*corners.length)];
-  return empty[Math.floor(Math.random()*empty.length)];
-}
-function playTTT(i){
-  if(tttLock||tttB[i]) return;
-  tttB[i]='X';
-  beep(500,0.04,'square',0.03);
-  renderTTT();
-  let r=winnerTTT(tttB);
-  if(r) return endDuel(r);
-  tttLock=true;
-  setTimeout(()=>{
-    const m=botMove(tttB);
-    if(m!=null) tttB[m]='O';
-    beep(260,0.05,'square',0.03);
-    renderTTT();
-    tttLock=false;
-    r=winnerTTT(tttB);
-    if(r) endDuel(r);
-  },350);
-}
-function endDuel(r){
-  tttLock=true;
-  if(r.line) for(const i of r.line) elBoard.children[i].classList.add('hl');
-  let prize=0;
-  if(r.w==='X'){
-    prize=duelPrize; S.ttt.wins++;
-    elTttMsg.textContent='IA derrotada. cofre aberto: +'+fmt(prize)+' bits.';
-    toast('DUELO VENCIDO','a IA de defesa caiu — +'+fmt(prize)+' bits saqueados do cofre','gold');
-    sndGold();
-  } else if(r.w==='draw'){
-    prize=Math.floor(duelPrize*0.25); S.ttt.draws++;
-    elTttMsg.textContent='empate. a IA libera 25% por respeito: +'+fmt(prize)+' bits.';
-    toast('EMPATE TÉCNICO','a IA cedeu 25% do cofre: +'+fmt(prize)+' bits','');
-    sndBuy();
-  } else {
-    S.ttt.losses++;
-    elTttMsg.textContent='você perdeu pra um algoritmo de 1983. o cofre continua trancado.';
-    log('a IA de defesa riu de você em binário','warn');
-    beep(110,0.25,'sawtooth',0.05);
-  }
-  if(prize){
-    S.bits+=prize; S.total+=prize;
-    log('duelo: +'+fmt(prize)+' bits','warn');
-  }
-  elTttC.textContent='[fechar]';
-  checkAch();
-}
-function closeDuel(forfeit){
-  if(forfeit){
-    S.ttt.losses++;
-    log('você fugiu do duelo. a IA anotou.','warn');
-  }
-  elTTT.classList.remove('open');
-  duelOpen=false; tttB=null;
-  nextDuel=Date.now()+(180+Math.random()*240)*1000;
-}
-elTttA.addEventListener('click',startDuel);
-elTttC.addEventListener('click',()=>{
-  const inGame = tttB && !winnerTTT(tttB);
-  closeDuel(inGame);
-});
-/* ================= TOASTS ================= */
-function toast(titulo,txt,cls){
-  const d=document.createElement('div');
-  d.className='toast'+(cls?' '+cls:'');
-  d.innerHTML='<b></b><span></span>';
-  d.querySelector('b').textContent=titulo;
-  d.querySelector('span').textContent=txt;
-  elToasts.appendChild(d);
-  setTimeout(()=>{ d.classList.add('out'); setTimeout(()=>d.remove(),450); },4000);
-}
-/* ================= LOJA ================= */
-document.querySelectorAll('#tabs button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    curTab=b.dataset.tab;
-    document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('active',x===b));
-    renderShop();
-  });
-});
-document.querySelectorAll('#qty-row button').forEach(b=>{
-  b.addEventListener('click',()=>{
-    curQty=b.dataset.q==='max'?'max':parseInt(b.dataset.q);
-    document.querySelectorAll('#qty-row button').forEach(x=>x.classList.toggle('active',x===b));
-    updateAfford();
-  });
-});
-function renderShop(){
-  elShop.innerHTML=''; elOwned.innerHTML='';
-  $('#qty-row').style.display=curTab==='hw'?'flex':'none';
-  if(curTab==='hw'){
-    for(const gen of GENS){
-      if(!S.seen.includes(gen.id)) continue;
-      const b=document.createElement('button');
-      b.className='shop-item'; b.dataset.gen=gen.id;
-      b.innerHTML=
-        '<span class="tag"></span>'+
-        '<span class="s-info"><b></b><small></small><span class="s-prod"></span></span>'+
-        '<span class="s-right"><span class="s-cost"></span><span class="s-owned"></span></span>';
-      b.querySelector('.tag').textContent=gen.tag;
-      b.querySelector('b').textContent=gen.nome;
-      b.querySelector('small').textContent=gen.desc;
-      b.addEventListener('click',()=>buyGen(gen));
-      elShop.appendChild(b);
-    }
-  } else if(curTab==='upg'){
-    const nxt=LOCAIS[S.loc+1];
-    if(nxt && nxt.req(S)){
-      const b=document.createElement('button');
-      b.className='shop-item upg move'; b.dataset.move='1';
-      b.innerHTML=
-        '<span class="tag">🚚</span>'+
-        '<span class="s-info"><b></b><small></small></span>'+
-        '<span class="s-right"><span class="s-cost"></span></span>';
-      b.querySelector('b').textContent='MUDANÇA: '+nxt.nome;
-      b.querySelector('small').textContent=nxt.desc;
-      b.querySelector('.s-cost').textContent=fmt(nxt.custo);
-      b.addEventListener('click',buyLoc);
-      elShop.appendChild(b);
-    }
-    for(const u of UPG){
-      if((u.loc||0)!==S.loc) continue;
-      if(S.upg.includes(u.id)) continue;
-      if(!u.req(S)) continue;
-      const b=document.createElement('button');
-      b.className='shop-item upg'; b.dataset.upg=u.id;
-      b.innerHTML=
-        '<span class="tag">UPG</span>'+
-        '<span class="s-info"><b></b><small></small></span>'+
-        '<span class="s-right"><span class="s-cost"></span></span>';
-      b.querySelector('b').textContent=u.nome;
-      b.querySelector('small').textContent=u.desc;
-      b.querySelector('.s-cost').textContent=fmt(u.custo);
-      b.addEventListener('click',()=>buyUpg(u));
-      elShop.appendChild(b);
-    }
-    if(!elShop.children.length){
-      elShop.innerHTML='<div style="color:#5fae84;font-size:12px;padding:10px">nenhum upgrade disponível agora. continue clicando e comprando hardware.</div>';
-    }
-    for(const u of UPG){
-      if(!S.upg.includes(u.id)) continue;
-      const sp=document.createElement('span');
-      sp.textContent='✓ '+u.nome;
-      elOwned.appendChild(sp);
-    }
-  } else {
-    for(const a of ACH){
-      const d=document.createElement('div');
-      const has=S.ach.includes(a.id);
-      d.className='ach-cell'+(has?'':' locked');
-      d.innerHTML='<b></b><small></small>';
-      d.querySelector('b').textContent=has?'★ '+a.nome:'??? bloqueada';
-      d.querySelector('small').textContent=a.desc;
-      elShop.appendChild(d);
-    }
-  }
-  updateAfford();
-}
-function buyGen(gen){
-  let k = curQty==='max' ? maxBuy(gen) : curQty;
-  if(k<1) return;
-  const cost=costOf(gen,k);
-  if(S.bits<cost) return;
-  S.bits-=cost;
-  S.gens[gen.id]=g(gen.id)+k;
-  recalc(); sndBuy();
-  log('comprou '+k+'× '+gen.nome+' por '+fmt(cost)+' bits');
-  unlockNextGens();
-  checkAch(); updateRoom(); renderShop();
-}
-function buyUpg(u){
-  if(S.bits<u.custo || S.upg.includes(u.id)) return;
-  S.bits-=u.custo;
-  S.upg.push(u.id);
-  recalc(); sndBuy();
-  toast('UPGRADE INSTALADO',u.nome+' — '+u.desc,'');
-  log('upgrade instalado: '+u.nome,'warn');
-  checkAch(); updateRoom(); renderShop();
-}
-/* ---------- mudança de local ---------- */
-function applyLoc(){
-  const L=LOCAIS[S.loc];
-  for(let i=1;i<LOCAIS.length;i++) document.body.classList.toggle('loc-'+i,S.loc===i);
-  $('#room-title').textContent='// '+L.nome;
-  $('#prompt-host').textContent=L.prompt;
-  $('#st-loc').textContent=L.nome;
-  $('#r-wall').setAttribute('fill',L.wall);
-  $('#r-floor').setAttribute('fill',L.floor);
-  $('#r-grid').setAttribute('stroke',L.grid);
-}
-function buyLoc(){
-  const nxt=LOCAIS[S.loc+1];
-  if(!nxt||S.bits<nxt.custo) return;
-  S.bits-=nxt.custo;
-  S.loc++;
-  recalc(); applyLoc();
-  toast('🚚 MUDANÇA: '+nxt.nome.toUpperCase(),nxt.flavor+' toda produção ×'+nxt.mult+'.','rank');
-  log('você se mudou: '+nxt.nome,'evt');
-  termLine(nxt.flavor,true);
-  sndRank();
-  document.body.classList.remove('glitching'); void document.body.offsetWidth;
-  document.body.classList.add('glitching');
-  checkAch(); updateRoom(); renderShop();
-}
-function unlockNextGens(){
-  for(let i=0;i<GENS.length;i++){
-    const gen=GENS[i];
-    if(S.seen.includes(gen.id)) continue;
-    const prev=GENS[i-1];
-    if((prev&&g(prev.id)>=1)||S.total>=gen.base*0.4){
-      S.seen.push(gen.id);
-      log('novo hardware no mercado negro: '+gen.nome,'evt');
-      if(curTab==='hw') renderShop();
-    }
-  }
-}
-function updateAfford(){
-  if(curTab==='hw'){
-    elShop.querySelectorAll('.shop-item').forEach(b=>{
-      const gen=GENS.find(x=>x.id===b.dataset.gen);
-      if(!gen) return;
-      let k = curQty==='max' ? Math.max(1,maxBuy(gen)) : curQty;
-      const cost=costOf(gen,k);
-      const can=S.bits>=cost && (curQty!=='max'||maxBuy(gen)>=1);
-      b.classList.toggle('ok',can);
-      b.querySelector('.s-cost').textContent=(curQty==='max'?k+'× ':'')+fmt(cost);
-      b.querySelector('.s-owned').textContent='possui '+g(gen.id);
-      b.querySelector('.s-prod').textContent=fmtRate(gen.prod)+' bits/s cada';
-    });
-  } else if(curTab==='upg'){
-    elShop.querySelectorAll('.shop-item').forEach(b=>{
-      if(b.dataset.move){
-        const nxt=LOCAIS[S.loc+1];
-        b.classList.toggle('ok',!!nxt&&S.bits>=nxt.custo);
-        return;
-      }
-      const u=UPG.find(x=>x.id===b.dataset.upg);
-      if(!u) return;
-      b.classList.toggle('ok',S.bits>=u.custo);
-    });
-  }
-}
-/* ================= SALA ================= */
-const ROOM_RULES = [
-  ['#r-desk',    ()=>true],
-  ['#r-chair',   ()=>true],
-  ['#r-monitor', ()=>true],
-  ['#r-kbd',     ()=>S.clicks>=1],
-  ['#r-code',    ()=>g('script')>=1],
-  ['#r-tower',   ()=>g('cpu')>=1],
-  ['#r-rig',     ()=>g('gpu')>=1],
-  ['#r-ssd',     ()=>g('ssd')>=1],
-  ['#r-server',  ()=>g('srv')>=1],
-  ['#r-rack',    ()=>g('rack')>=1],
-  ['#r-map',     ()=>g('bot')>=1],
-  ['#r-bigscreen',()=>g('dtc')>=1],
-  ['#r-quantum', ()=>g('qtm')>=1],
-  ['#r-monitor2',()=>S.upg.includes('monitor')],
-  ['#r-poster1', ()=>S.upg.length>=3],
-  ['#r-poster2', ()=>S.upg.length>=8],
-  ['#r-cans',    ()=>S.clicks>=150],
-  ['#r-cat',     ()=>S.ach.length>=10],
-];
-function updateRoom(){
-  for(const [sel,cond] of ROOM_RULES){
-    const el=document.querySelector(sel);
-    if(el) el.classList.toggle('on',!!cond());
-  }
-}
-/* ================= RANK ================= */
-function rankOf(total){
-  let i=0;
-  for(let k=0;k<RANKS.length;k++) if(total>=RANKS[k][0]) i=k;
-  return i;
-}
-function updateRank(initial){
-  const i=rankOf(S.total);
-  if(i!==rankIdx || initial){
-    if(!initial && i>rankIdx){
-      toast('RANK NOVO: '+RANKS[i][1].toUpperCase(),'sua reputação na rede aumentou','rank');
-      log('promovido a '+RANKS[i][1],'evt');
-      sndRank();
-      document.body.classList.remove('glitching'); void document.body.offsetWidth;
-      document.body.classList.add('glitching');
-    }
-    rankIdx=i;
-    elRankName.textContent=RANKS[i][1];
-  }
-  if(i<RANKS.length-1){
-    const cur=RANKS[i][0], next=RANKS[i+1][0];
-    elRankFill.style.width=Math.min(100,(S.total-cur)/(next-cur)*100)+'%';
-    elRankNext.textContent='próximo rank: '+fmt(next)+' bits totais';
-  } else {
-    elRankFill.style.width='100%';
-    elRankNext.textContent='rank máximo alcançado';
-  }
-}
-/* ================= CONQUISTAS ================= */
-function checkAch(){
-  for(const a of ACH){
-    if(S.ach.includes(a.id)) continue;
-    if(a.cond(S)){
-      S.ach.push(a.id);
-      toast('★ CONQUISTA',a.nome+' — '+a.desc,'gold');
-      log('conquista desbloqueada: '+a.nome,'warn');
-      sndAch();
-      if(curTab==='ach') renderShop();
-      updateRoom();
-    }
-  }
-}
-/* ================= UI TICK ================= */
-function updateCounters(){
-  elBits.innerHTML='';
-  elBits.appendChild(document.createTextNode(fmt(S.bits)+' '));
-  const sm=document.createElement('small'); sm.textContent='bits';
-  elBits.appendChild(sm);
-  const bM=buffMult();
-  const bTxt=bM>1?' [×'+buff.mult+' '+Math.ceil((buff.until-Date.now())/1000)+'s]':'';
-  elBps.textContent=fmtRate(bps*bM)+' bits/s'+bTxt+' · '+fmtRate(clickPow)+'/clique';
-  $('#st-total').textContent=fmt(S.total);
-  $('#st-clicks').textContent=S.clicks.toLocaleString('pt-BR');
-  $('#st-ach').textContent=S.ach.length+'/'+ACH.length;
-  $('#st-click-pow').textContent=fmt(clickPow*clickBuffMult());
-  $('#st-ttt').textContent=S.ttt.wins+'V/'+S.ttt.losses+'D';
-  document.title=fmt(S.bits)+' bits — h4ck.farm';
-}
-function tick(){
-  const now=Date.now();
-  const dt=(now-lastTick)/1000;
-  lastTick=now;
-  const gain=bps*buffMult()*dt;
-  S.bits+=gain; S.total+=gain;
-  if(eventOn){
-    if(now-eventStart>=EVENT_HARD_MS) endEvento(true);
-    else{
-      const rem=1-(now-lastCmdAt)/cmdWindow();
-      if(rem<=0) endEvento();
-      else updateEventoTimer(rem);
-    }
-  }
-  if(now>=nextEvento && !eventOn && !evtModalOpen && !duelOpen) offerEvento();
-  if(now>=nextPacket && !packetEl) spawnPacket();
-  if(now>=nextAds && adsOpen===0 && !eventOn && !duelOpen && !evtModalOpen) spawnAdBurst();
-  if(now>=nextDuel && !duelOpen && !eventOn && !evtModalOpen) openDuel();
-  updateCounters();
-  updateAfford();
-  updateRank(false);
-  updateFmtBtn();
-  unlockNextGens();
-}
-setInterval(tick,100);
-setInterval(checkAch,1000);
-setInterval(missionTick,400);
-/* ================= SAVE / LOAD ================= */
-function save(){
-  S.saved=Date.now();
-  try{ localStorage.setItem(SAVE_KEY,JSON.stringify(S)); }catch(e){}
-}
-setInterval(save,10000);
-window.addEventListener('beforeunload',save);
-function load(){
-  try{
-    const raw=localStorage.getItem(SAVE_KEY);
-    if(!raw) return false;
-    const d=JSON.parse(raw);
-    S=Object.assign(defaultState(),d);
-    if(!Array.isArray(S.seen)||!S.seen.length) S.seen=['script'];
-    return true;
-  }catch(e){ return false; }
-}
-function offlineGains(){
-  const away=(Date.now()-S.saved)/1000;
-  if(away<60) return;
-  recalc();
-  if(bps<=0) return;
-  const capped=Math.min(away,8*3600);
-  const gain=bps*capped*0.5;
-  S.bits+=gain; S.total+=gain;
-  toast('BEM-VINDO DE VOLTA','seus scripts mineraram '+fmt(gain)+' bits enquanto você dormia','gold');
-  log('ganho offline: +'+fmt(gain)+' bits ('+Math.floor(capped/60)+' min a 50%)','warn');
-}
-/* ================= BOTÕES TOPO ================= */
-$('#btn-mute').addEventListener('click',()=>{
-  S.muted=!S.muted;
-  $('#btn-mute').textContent='[som: '+(S.muted?'off':'on')+']';
-});
-$('#btn-reset').addEventListener('click',()=>{
-  if(!confirm('Apagar TODO o progresso e começar do zero?')) return;
-  localStorage.removeItem(SAVE_KEY);
-  window.removeEventListener('beforeunload',save);
-  location.reload();
-});
-/* ================= INIT ================= */
-(function init(){
-  const had=load();
-  if(had) offlineGains();
-  recalc();
-  applyLoc();
-  $('#btn-mute').textContent='[som: '+(S.muted?'off':'on')+']';
-  renderShop();
-  updateRoom();
-  updateRank(true);
-  renderMission();
-  updateCounters();
-  termLine(had?'sessão restaurada. bem-vindo de volta.':'sistema iniciado. clique no terminal pra minerar bits.',true);
-  log(had?'save carregado do disco':'novo operador registrado na rede','evt');
-  renderPrompt();
-  lastTick=Date.now();
-})();
-</script>
+<script src="js/data.js"></script>
+<script src="js/game.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/events.js"></script>
+<script src="js/prestige.js"></script>
+<script src="js/save.js"></script>
 </body>
 </html>
